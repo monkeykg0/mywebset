@@ -5,8 +5,8 @@ import { Analytics } from '@vercel/analytics/react'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: '我的个人网站',
-  description: '欢迎来到我的个人网站',
+  title: '陈胜燕医师 - 中医内科专家',
+  description: '陈胜燕，河南中医药大学硕士研究生，中医内科心血管方向专家，擅长中医及中西医结合治疗',
 }
 
 export default function RootLayout({

@@ -21,7 +21,7 @@ export default function Header() {
   const navItems = [
     { href: '#home', label: '首页', icon: <Home className="w-4 h-4" /> },
     { href: '#about', label: '关于我', icon: <User className="w-4 h-4" /> },
-    { href: '#projects', label: '项目', icon: <Briefcase className="w-4 h-4" /> },
+    { href: '#projects', label: '专业领域', icon: <Briefcase className="w-4 h-4" /> },
     { href: '#contact', label: '联系我', icon: <Mail className="w-4 h-4" /> },
   ]
 
@@ -61,7 +61,7 @@ export default function Header() {
               }}
               className="text-gradient bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
             >
-              张三
+              陈胜燕医师
             </a>
           </motion.div>
           

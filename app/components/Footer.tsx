@@ -44,11 +44,11 @@ export default function Footer() {
             viewport={{ once: true }}
           >
             <h3 className="text-2xl font-bold mb-4 text-gradient bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              张三
+              陈胜燕医师
             </h3>
             <p className="text-gray-300 leading-relaxed mb-6">
-              全栈开发工程师，专注于创建优秀的数字体验。
-              让我们一起构建更美好的网络世界。
+              中医内科医师，专注于心血管疾病的中西医结合治疗。
+              致力于为患者提供优质的医疗服务。
             </p>
             <div className="flex items-center gap-2 text-gray-400">
               <span>Made with</span>
@@ -135,7 +135,7 @@ export default function Footer() {
               transition={{ delay: 0.2, duration: 0.6 }}
               viewport={{ once: true }}
             >
-              © {currentYear} 张三. 保留所有权利. | 用 ❤️ 和 Next.js 构建
+              © {currentYear} 陈胜燕医师. 保留所有权利. | 用 ❤️ 和 Next.js 构建
             </motion.p>
             
             <motion.div

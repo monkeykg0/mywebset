@@ -8,36 +8,36 @@ import { Github, ExternalLink, Code, Database, Globe, Zap } from 'lucide-react'
 export default function Projects() {
   const projects = [
     {
-      title: '电商平台',
-      description: '基于Next.js和Node.js构建的全栈电商解决方案，支持用户注册、商品管理、订单处理等完整功能。',
-      tech: ['Next.js', 'Node.js', 'MongoDB', 'Stripe'],
+      title: '心血管疾病',
+      description: '擅长运用中医辨证论治结合现代医学诊疗手段，治疗冠心病、高血压、心律失常等心血管疾病，疗效显著。',
+      tech: ['冠心病', '高血压', '心律失常', '心力衰竭'],
       icon: <Globe className="w-8 h-8" />,
       gradient: 'from-blue-500 to-cyan-500',
       github: '#',
       demo: '#'
     },
     {
-      title: '任务管理应用',
-      description: '一个现代化的任务管理工具，支持团队协作、实时同步、文件共享等功能。',
-      tech: ['React', 'Express', 'Socket.io', 'PostgreSQL'],
+      title: '老年病诊治',
+      description: '针对老年患者的特殊体质，制定个性化的中西医结合治疗方案，注重整体调理，提高生活质量。',
+      tech: ['慢性病', '体质调理', '养生保健', '康复指导'],
       icon: <Code className="w-8 h-8" />,
       gradient: 'from-purple-500 to-pink-500',
       github: '#',
       demo: '#'
     },
     {
-      title: '数据可视化仪表板',
-      description: '企业级数据分析平台，提供实时数据监控、图表展示和报告生成功能。',
-      tech: ['Vue.js', 'D3.js', 'Python', 'FastAPI'],
+      title: '中医内科',
+      description: '运用中医经典理论，结合现代诊疗技术，治疗各类内科疾病，如脾胃病、失眠、慢性疲劳等。',
+      tech: ['脾胃病', '失眠调理', '体质辨识', '中药调理'],
       icon: <Database className="w-8 h-8" />,
       gradient: 'from-green-500 to-teal-500',
       github: '#',
       demo: '#'
     },
     {
-      title: 'AI聊天机器人',
-      description: '集成GPT的智能聊天机器人，支持多轮对话、上下文理解和个性化回复。',
-      tech: ['React', 'OpenAI API', 'Node.js', 'Redis'],
+      title: '健康管理',
+      description: '提供专业的健康咨询和慢性病管理服务，制定科学的预防保健方案，帮助患者建立健康生活方式。',
+      tech: ['健康评估', '慢性病管理', '预防保健', '养生指导'],
       icon: <Zap className="w-8 h-8" />,
       gradient: 'from-orange-500 to-red-500',
       github: '#',
@@ -85,11 +85,11 @@ export default function Projects() {
           >
             <h2 className="text-5xl md:text-6xl font-bold mb-6">
               <span className="text-gradient bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent">
-                我的项目
+                专业领域
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              探索我创建的一些令人兴奋的项目，每个都展示了不同的技术栈和创新解决方案
+              专注于中医内科及心血管疾病的诊疗，提供专业的中西医结合治疗方案
             </p>
           </motion.div>
           
@@ -141,25 +141,14 @@ export default function Projects() {
                   
                   <CardFooter className="flex gap-4 pt-4">
                     <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="flex-1 group/btn hover:bg-gray-900 hover:text-white transition-all duration-300"
-                      asChild
-                    >
-                      <a href={project.github} className="flex items-center gap-2">
-                        <Github className="w-4 h-4 group-hover/btn:rotate-12 transition-transform duration-300" />
-                        GitHub
-                      </a>
-                    </Button>
-                    <Button 
                       variant="default" 
                       size="sm" 
                       className={`flex-1 bg-gradient-to-r ${project.gradient} hover:opacity-90 transition-all duration-300 group/btn`}
                       asChild
                     >
-                      <a href={project.demo} className="flex items-center gap-2">
+                      <a href="#contact" className="flex items-center gap-2">
                         <ExternalLink className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform duration-300" />
-                        演示
+                        咨询预约
                       </a>
                     </Button>
                   </CardFooter>
@@ -181,8 +170,8 @@ export default function Projects() {
               className="group relative overflow-hidden"
               asChild
             >
-              <a href="#" className="flex items-center gap-2">
-                <span className="relative z-10">查看更多项目</span>
+              <a href="#contact" className="flex items-center gap-2">
+                <span className="relative z-10">预约咨询</span>
                 <ExternalLink className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300" />
               </a>
             </Button>

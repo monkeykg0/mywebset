@@ -41,19 +41,19 @@ export default function Contact() {
     {
       icon: <Mail className="w-6 h-6" />,
       title: "邮箱",
-      value: "[email]@example.com",
+      value: "联系请通过医院预约",
       gradient: "from-blue-500 to-cyan-500"
     },
     {
       icon: <Phone className="w-6 h-6" />,
-      title: "电话",
-      value: "[phone_number]",
+      title: "就诊预约",
+      value: "医院门诊预约",
       gradient: "from-green-500 to-teal-500"
     },
     {
       icon: <MapPin className="w-6 h-6" />,
-      title: "位置",
-      value: "中国，北京",
+      title: "就职医院",
+      value: "武汉科技大学医院附属德康老年病医院",
       gradient: "from-purple-500 to-pink-500"
     }
   ]
@@ -88,7 +88,7 @@ export default function Contact() {
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              让我们开始一段精彩的对话，探讨技术、创意和无限可能
+              欢迎咨询预约，我将竭诚为您提供专业的中医诊疗服务
             </p>
           </motion.div>
           
@@ -104,13 +104,13 @@ export default function Contact() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <MessageCircle className="w-8 h-8 text-blue-600" />
-                    让我们开始对话
+                    预约咨询
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 leading-relaxed text-lg mb-6">
-                    我很乐意听到您的想法！无论是项目合作、技术交流，
-                    还是简单的问候，都欢迎与我联系。
+                    如果您有健康方面的困扰，欢迎预约咨询。
+                    我将运用专业的中医知识和临床经验，为您提供个性化的诊疗方案。
                   </p>
                   
                   <div className="space-y-6">
@@ -135,23 +135,14 @@ export default function Contact() {
                     ))}
                   </div>
 
-                  {/* 社交媒体链接 */}
+                  {/* 就诊提示 */}
                   <div className="mt-8 pt-6 border-t border-gray-200">
-                    <p className="text-gray-700 font-medium mb-4">关注我的社交媒体</p>
-                    <div className="flex gap-4">
-                      {socialLinks.map((social, index) => (
-                        <motion.a
-                          key={index}
-                          href={social.href}
-                          className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center text-gray-600 hover:bg-blue-600 hover:text-white transition-all duration-300 group"
-                          whileHover={{ scale: 1.1, rotate: 5 }}
-                          whileTap={{ scale: 0.95 }}
-                          aria-label={social.label}
-                        >
-                          {social.icon}
-                        </motion.a>
-                      ))}
-                    </div>
+                    <p className="text-gray-700 font-medium mb-2">就诊须知</p>
+                    <p className="text-gray-600 text-sm">
+                      • 建议提前预约挂号<br/>
+                      • 初诊患者请携带既往病历资料<br/>
+                      • 如有过敏史请提前告知
+                    </p>
                   </div>
                 </CardContent>
               </Card>

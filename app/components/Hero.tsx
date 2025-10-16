@@ -8,11 +8,11 @@ import { AnimatedBackground } from '@/components/ui/animated-background'
 
 export default function Hero() {
   const roles = [
-    "全栈开发工程师",
-    "前端架构师", 
-    "技术爱好者",
-    "终身学习者",
-    "创新者"
+    "中医内科医师",
+    "心血管方向专家", 
+    "中西医结合专家",
+    "健康守护者",
+    "仁心仁术"
   ]
 
   return (
@@ -39,7 +39,7 @@ export default function Hero() {
           >
             <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-blue-500 to-purple-600 p-1 animate-pulse-glow">
               <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-600">
-                张
+                陈
               </div>
             </div>
           </motion.div>
@@ -58,7 +58,7 @@ export default function Hero() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, type: "spring", stiffness: 150 }}
             >
-              张三
+              陈胜燕
             </motion.span>
           </motion.h1>
 
@@ -82,9 +82,9 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
           >
-            专注于现代Web开发技术，热爱创造有意义的数字产品。
-            拥有丰富的前端和后端开发经验，致力于构建用户友好的应用程序。
-            让我们一起创造令人惊叹的数字体验！
+            毕业于河南中医药大学，硕士研究生学历，专业中医内科，心血管方向。
+            擅长中医治疗以及中西医结合治疗方案。
+            目前就职于武汉科技大学医院附属德康老年病医院。
           </motion.p>
 
           {/* 按钮组 */}
@@ -101,7 +101,7 @@ export default function Hero() {
               asChild
             >
               <a href="#projects">
-                <span className="relative z-10">查看我的项目</span>
+                <span className="relative z-10">了解专业领域</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </a>
             </Button>

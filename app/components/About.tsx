@@ -7,21 +7,21 @@ import { Code, Database, Globe, Zap, Award, BookOpen } from 'lucide-react'
 
 export default function About() {
   const skills = [
-    { name: 'JavaScript/TypeScript', level: 95, icon: <Code className="w-4 h-4" /> },
-    { name: 'React/Next.js', level: 90, icon: <Globe className="w-4 h-4" /> },
-    { name: 'Node.js', level: 85, icon: <Zap className="w-4 h-4" /> },
-    { name: 'Python', level: 80, icon: <Code className="w-4 h-4" /> },
-    { name: 'SQL/NoSQL', level: 85, icon: <Database className="w-4 h-4" /> },
-    { name: 'AWS/云服务', level: 75, icon: <Globe className="w-4 h-4" /> },
-    { name: 'Git/GitHub', level: 90, icon: <Code className="w-4 h-4" /> },
-    { name: 'Docker', level: 70, icon: <Zap className="w-4 h-4" /> }
+    { name: '中医诊断', level: 95, icon: <Code className="w-4 h-4" /> },
+    { name: '心血管疾病治疗', level: 90, icon: <Globe className="w-4 h-4" /> },
+    { name: '中西医结合', level: 90, icon: <Zap className="w-4 h-4" /> },
+    { name: '针灸推拿', level: 85, icon: <Code className="w-4 h-4" /> },
+    { name: '方剂配伍', level: 90, icon: <Database className="w-4 h-4" /> },
+    { name: '老年病诊治', level: 85, icon: <Globe className="w-4 h-4" /> },
+    { name: '慢性病管理', level: 88, icon: <Code className="w-4 h-4" /> },
+    { name: '健康咨询', level: 90, icon: <Zap className="w-4 h-4" /> }
   ]
 
   const achievements = [
-    { title: "5年+", subtitle: "开发经验", icon: <Award className="w-6 h-6" /> },
-    { title: "50+", subtitle: "完成项目", icon: <Code className="w-6 h-6" /> },
-    { title: "10+", subtitle: "技术栈", icon: <Zap className="w-6 h-6" /> },
-    { title: "100%", subtitle: "客户满意度", icon: <Globe className="w-6 h-6" /> }
+    { title: "硕士", subtitle: "研究生学历", icon: <Award className="w-6 h-6" /> },
+    { title: "1000+", subtitle: "诊治患者", icon: <Code className="w-6 h-6" /> },
+    { title: "中西医", subtitle: "结合治疗", icon: <Zap className="w-6 h-6" /> },
+    { title: "专业", subtitle: "心血管方向", icon: <Globe className="w-6 h-6" /> }
   ]
 
   const containerVariants = {
@@ -69,7 +69,7 @@ export default function About() {
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              一个充满激情的开发者，致力于创造令人惊叹的数字体验
+              一位充满爱心的中医医师，致力于为患者提供优质的医疗服务
             </p>
           </motion.div>
 
@@ -128,8 +128,8 @@ export default function About() {
                     transition={{ delay: 0.2, duration: 0.6 }}
                     viewport={{ once: true }}
                   >
-                    我是一名充满热情的全栈开发工程师，拥有5年的软件开发经验。
-                    我喜欢解决复杂的技术问题，并将创意想法转化为实际的数字产品。
+                    我是一名充满热情的中医内科医师，专注于心血管疾病的中医及中西医结合治疗。
+                    我致力于将传统中医理论与现代医学技术相结合，为患者提供最优质的医疗服务。
                   </motion.p>
                   <motion.p 
                     className="text-gray-600 leading-relaxed text-lg"
@@ -138,9 +138,9 @@ export default function About() {
                     transition={{ delay: 0.3, duration: 0.6 }}
                     viewport={{ once: true }}
                   >
-                    在我的职业生涯中，我参与了多个大型项目的开发，
-                    从电商平台到企业级管理系统，积累了丰富的实战经验。
-                    我相信技术应该服务于人，让生活变得更美好。
+                    在临床工作中，我积累了丰富的诊疗经验，
+                    尤其在老年心血管疾病、慢性病管理等方面有独到见解。
+                    我相信中医药的智慧能够为现代医学提供有益补充，帮助患者恢复健康。
                   </motion.p>
                   <motion.p 
                     className="text-gray-600 leading-relaxed text-lg"
@@ -149,8 +149,8 @@ export default function About() {
                     transition={{ delay: 0.4, duration: 0.6 }}
                     viewport={{ once: true }}
                   >
-                    除了编程，我还热爱阅读、摄影和旅行。
-                    我认为多元化的兴趣爱好能够为我的工作带来更多的创意和灵感。
+                    除了临床工作，我还热心于中医药知识的传播和健康教育。
+                    我希望通过专业的医疗服务和健康指导，帮助更多人提升生活质量。
                   </motion.p>
 
                   {/* 教育背景 */}
@@ -165,8 +165,8 @@ export default function About() {
                       <Award className="w-5 h-5 text-blue-600" />
                       教育背景
                     </h4>
-                    <p className="font-medium text-gray-900">计算机科学学士</p>
-                    <p className="text-gray-600">某某大学 | 2015-2019</p>
+                    <p className="font-medium text-gray-900">中医内科学 硕士研究生</p>
+                    <p className="text-gray-600">河南中医药大学 | 心血管方向</p>
                   </motion.div>
                 </CardContent>
               </Card>
