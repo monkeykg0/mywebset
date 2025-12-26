@@ -44,11 +44,11 @@ export default function Footer() {
             viewport={{ once: true }}
           >
             <h3 className="text-2xl font-bold mb-4 text-gradient bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              陈胜燕医师
+              唐亚凯
             </h3>
             <p className="text-gray-300 leading-relaxed mb-6">
-              中医内科医师，专注于心血管疾病的中西医结合治疗。
-              致力于为患者提供优质的医疗服务。
+              全栈开发工程师，专注于现代 Web 技术栈。
+              热爱设计与编码，致力于创造极致的用户体验。
             </p>
             <div className="flex items-center gap-2 text-gray-400">
               <span>Made with</span>
@@ -56,7 +56,7 @@ export default function Footer() {
               <span>and lots of ☕</span>
             </div>
           </motion.div>
-          
+
           {/* 快速链接 */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -74,8 +74,8 @@ export default function Footer() {
                   transition={{ delay: index * 0.1, duration: 0.4 }}
                   viewport={{ once: true }}
                 >
-                  <a 
-                    href={link.href} 
+                  <a
+                    href={link.href}
                     className="text-gray-400 hover:text-white transition-all duration-300 hover:translate-x-2 inline-block group"
                   >
                     <span className="border-b border-transparent group-hover:border-white transition-all duration-300">
@@ -86,7 +86,7 @@ export default function Footer() {
               ))}
             </ul>
           </motion.div>
-          
+
           {/* 社交媒体 */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -118,7 +118,7 @@ export default function Footer() {
             </p>
           </motion.div>
         </div>
-        
+
         {/* 分割线 */}
         <motion.div
           className="border-t border-gray-700 pt-8"
@@ -135,9 +135,9 @@ export default function Footer() {
               transition={{ delay: 0.2, duration: 0.6 }}
               viewport={{ once: true }}
             >
-              © {currentYear} 陈胜燕医师. 保留所有权利. | 用 ❤️ 和 Next.js 构建
+              © {currentYear} 唐亚凯. 保留所有权利. | 用 ❤️ 和 React 构建
             </motion.p>
-            
+
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}

@@ -27,10 +27,10 @@ export default function Contact() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
+
     // 模拟提交延迟
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     console.log('表单数据:', formData)
     alert('感谢您的留言！我会尽快回复您。')
     setFormData({ name: '', email: '', message: '' })
@@ -41,19 +41,19 @@ export default function Contact() {
     {
       icon: <Mail className="w-6 h-6" />,
       title: "邮箱",
-      value: "联系请通过医院预约",
+      value: "hello@tangyakai.dev",
       gradient: "from-blue-500 to-cyan-500"
     },
     {
-      icon: <Phone className="w-6 h-6" />,
-      title: "就诊预约",
-      value: "医院门诊预约",
+      icon: <Github className="w-6 h-6" />,
+      title: "GitHub",
+      value: "@tangyakai",
       gradient: "from-green-500 to-teal-500"
     },
     {
       icon: <MapPin className="w-6 h-6" />,
-      title: "就职医院",
-      value: "武汉科技大学医院附属德康老年病医院",
+      title: "位置",
+      value: "中国 · 上海",
       gradient: "from-purple-500 to-pink-500"
     }
   ]
@@ -72,7 +72,7 @@ export default function Contact() {
         <div className="absolute top-20 left-20 w-64 h-64 bg-blue-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float"></div>
         <div className="absolute bottom-20 right-20 w-64 h-64 bg-purple-200 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-float" style={{ animationDelay: '3s' }}></div>
       </div>
-      
+
       <div className="relative z-10 container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -88,10 +88,10 @@ export default function Contact() {
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              欢迎咨询预约，我将竭诚为您提供专业的中医诊疗服务
+              期待与您的合作，共同创造优秀的产品
             </p>
           </motion.div>
-          
+
           <div className="grid lg:grid-cols-2 gap-12">
             {/* 左侧信息 */}
             <motion.div
@@ -104,15 +104,15 @@ export default function Contact() {
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3 text-2xl">
                     <MessageCircle className="w-8 h-8 text-blue-600" />
-                    预约咨询
+                    合作咨询
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p className="text-gray-600 leading-relaxed text-lg mb-6">
-                    如果您有健康方面的困扰，欢迎预约咨询。
-                    我将运用专业的中医知识和临床经验，为您提供个性化的诊疗方案。
+                    如果您有任何技术问题、项目合作意向，或者只是想聊聊前端开发，欢迎随时联系我。
+                    我热衷于探讨新技术，也乐于分享我的经验。
                   </p>
-                  
+
                   <div className="space-y-6">
                     {contactInfo.map((info, index) => (
                       <motion.div
@@ -137,17 +137,17 @@ export default function Contact() {
 
                   {/* 就诊提示 */}
                   <div className="mt-8 pt-6 border-t border-gray-200">
-                    <p className="text-gray-700 font-medium mb-2">就诊须知</p>
+                    <p className="text-gray-700 font-medium mb-2">工作状态</p>
                     <p className="text-gray-600 text-sm">
-                      • 建议提前预约挂号<br/>
-                      • 初诊患者请携带既往病历资料<br/>
-                      • 如有过敏史请提前告知
+                      • 目前接受远程协作<br />
+                      • 欢迎开源项目贡献邀请<br />
+                      • 24小时内回复邮件
                     </p>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
-            
+
             {/* 右侧表单 */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
@@ -180,7 +180,7 @@ export default function Contact() {
                         className="transition-all duration-300 focus:scale-105"
                       />
                     </motion.div>
-                    
+
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -201,7 +201,7 @@ export default function Contact() {
                         className="transition-all duration-300 focus:scale-105"
                       />
                     </motion.div>
-                    
+
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}
@@ -222,7 +222,7 @@ export default function Contact() {
                         className="resize-none transition-all duration-300 focus:scale-105"
                       />
                     </motion.div>
-                    
+
                     <motion.div
                       initial={{ opacity: 0, y: 20 }}
                       whileInView={{ opacity: 1, y: 0 }}

@@ -8,11 +8,10 @@ import { AnimatedBackground } from '@/components/ui/animated-background'
 
 export default function Hero() {
   const roles = [
-    "中医内科医师",
-    "心血管方向专家", 
-    "中西医结合专家",
-    "健康守护者",
-    "仁心仁术"
+    "前端开发工程师",
+    "全栈开发者",
+    "技术爱好者",
+    "UI/UX 设计师"
   ]
 
   return (
@@ -21,10 +20,10 @@ export default function Hero() {
       <div className="absolute inset-0 gradient-bg opacity-20"></div>
       <AnimatedBackground />
       <FloatingElements />
-      
+
       {/* 主要内容 */}
       <div className="relative z-10 container mx-auto px-4 text-center">
-        <motion.div 
+        <motion.div
           className="max-w-4xl mx-auto"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
@@ -39,26 +38,26 @@ export default function Hero() {
           >
             <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-r from-blue-500 to-purple-600 p-1 animate-pulse-glow">
               <div className="w-full h-full rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-600">
-                陈
+                唐
               </div>
             </div>
           </motion.div>
 
           {/* 标题 */}
-          <motion.h1 
+          <motion.h1
             className="text-5xl md:text-7xl font-bold mb-6"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.8 }}
           >
             <span className="text-gray-900">你好，我是</span>
-            <motion.span 
+            <motion.span
               className="block mt-2 text-gradient bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 bg-clip-text text-transparent animate-gradient-x"
               initial={{ opacity: 0, scale: 0.5 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.6, type: "spring", stiffness: 150 }}
             >
-              陈胜燕
+              唐亚凯
             </motion.span>
           </motion.h1>
 
@@ -69,33 +68,33 @@ export default function Hero() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8, duration: 0.8 }}
           >
-            <TypewriterEffect 
+            <TypewriterEffect
               words={roles}
               className="font-semibold"
             />
           </motion.div>
 
           {/* 描述文字 */}
-          <motion.p 
+          <motion.p
             className="text-lg md:text-xl text-gray-500 mb-10 max-w-3xl mx-auto leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1, duration: 0.8 }}
           >
-            毕业于河南中医药大学，硕士研究生学历，专业中医内科，心血管方向。
-            擅长中医治疗以及中西医结合治疗方案。
-            目前就职于武汉科技大学医院附属德康老年病医院。
+            专注于打造高性能、高交互的 Web 与移动应用。
+            精通 Vue, React, Flutter 等现代前端技术栈。
+            致力于通过技术解决实际问题，创造极致的用户体验。
           </motion.p>
 
           {/* 按钮组 */}
-          <motion.div 
+          <motion.div
             className="flex flex-col sm:flex-row gap-6 justify-center items-center"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2, duration: 0.8 }}
           >
-            <Button 
-              variant="gradient" 
+            <Button
+              variant="gradient"
               size="lg"
               className="group relative overflow-hidden"
               asChild
@@ -105,9 +104,9 @@ export default function Hero() {
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-blue-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               </a>
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               size="lg"
               className="border-2 border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white transition-all duration-300 hover:shadow-lg hover:scale-105"
               asChild

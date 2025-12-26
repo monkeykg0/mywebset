@@ -6,9 +6,12 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata = {
-  title: '陈胜燕医师 - 中医内科专家',
-  description: '陈胜燕，河南中医药大学硕士研究生，中医内科心血管方向专家，擅长中医及中西医结合治疗',
+  title: '唐亚凯 - 前端开发工程师',
+  description: '唐亚凯，全栈开发者，精通 Vue, React, Flutter 等现代前端技术栈。',
 }
+
+import { MouseTrail } from '@/components/ui/mouse-trail'
+import { ScrollProgress } from '@/components/ui/scroll-progress'
 
 export default function RootLayout({
   children,
@@ -18,6 +21,8 @@ export default function RootLayout({
   return (
     <html lang="zh">
       <body className={inter.className}>
+        <ScrollProgress />
+        <MouseTrail />
         {children}
         <Analytics />
         <SpeedInsights />

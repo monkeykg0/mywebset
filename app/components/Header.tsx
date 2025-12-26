@@ -61,7 +61,7 @@ export default function Header() {
               }}
               className="text-gradient bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
             >
-              陈胜燕医师
+              唐亚凯
             </a>
           </motion.div>
           

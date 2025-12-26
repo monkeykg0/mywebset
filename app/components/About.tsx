@@ -7,21 +7,21 @@ import { Code, Database, Globe, Zap, Award, BookOpen } from 'lucide-react'
 
 export default function About() {
   const skills = [
-    { name: '中医诊断', level: 95, icon: <Code className="w-4 h-4" /> },
-    { name: '心血管疾病治疗', level: 90, icon: <Globe className="w-4 h-4" /> },
-    { name: '中西医结合', level: 90, icon: <Zap className="w-4 h-4" /> },
-    { name: '针灸推拿', level: 85, icon: <Code className="w-4 h-4" /> },
-    { name: '方剂配伍', level: 90, icon: <Database className="w-4 h-4" /> },
-    { name: '老年病诊治', level: 85, icon: <Globe className="w-4 h-4" /> },
-    { name: '慢性病管理', level: 88, icon: <Code className="w-4 h-4" /> },
-    { name: '健康咨询', level: 90, icon: <Zap className="w-4 h-4" /> }
+    { name: 'Vue.js', level: 95, icon: <Code className="w-4 h-4" /> },
+    { name: 'React', level: 90, icon: <Globe className="w-4 h-4" /> },
+    { name: 'Flutter', level: 85, icon: <Zap className="w-4 h-4" /> },
+    { name: 'TypeScript', level: 90, icon: <Code className="w-4 h-4" /> },
+    { name: 'Next.js', level: 88, icon: <Globe className="w-4 h-4" /> },
+    { name: 'Node.js', level: 80, icon: <Database className="w-4 h-4" /> },
+    { name: 'TailwindCSS', level: 95, icon: <Zap className="w-4 h-4" /> },
+    { name: 'Git', level: 90, icon: <Code className="w-4 h-4" /> }
   ]
 
   const achievements = [
-    { title: "硕士", subtitle: "研究生学历", icon: <Award className="w-6 h-6" /> },
-    { title: "1000+", subtitle: "诊治患者", icon: <Code className="w-6 h-6" /> },
-    { title: "中西医", subtitle: "结合治疗", icon: <Zap className="w-6 h-6" /> },
-    { title: "专业", subtitle: "心血管方向", icon: <Globe className="w-6 h-6" /> }
+    { title: "3年+", subtitle: "开发经验", icon: <Award className="w-6 h-6" /> },
+    { title: "20+", subtitle: "项目交付", icon: <Code className="w-6 h-6" /> },
+    { title: "全栈", subtitle: "技术能力", icon: <Zap className="w-6 h-6" /> },
+    { title: "专业", subtitle: "解决方案", icon: <Globe className="w-6 h-6" /> }
   ]
 
   const containerVariants = {
@@ -53,7 +53,7 @@ export default function About() {
         <div className="absolute top-20 right-20 w-72 h-72 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float"></div>
         <div className="absolute bottom-20 left-20 w-72 h-72 bg-purple-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-float" style={{ animationDelay: '2s' }}></div>
       </div>
-      
+
       <div className="relative z-10 container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -69,7 +69,7 @@ export default function About() {
               </span>
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-              一位充满爱心的中医医师，致力于为患者提供优质的医疗服务
+              一位热爱技术的开发者，致力于通过代码改变世界
             </p>
           </motion.div>
 
@@ -104,7 +104,7 @@ export default function About() {
               </motion.div>
             ))}
           </motion.div>
-          
+
           <div className="grid lg:grid-cols-2 gap-12 items-start">
             {/* 左侧：个人故事 */}
             <motion.div
@@ -121,36 +121,35 @@ export default function About() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <motion.p 
+                  <motion.p
                     className="text-gray-600 leading-relaxed text-lg"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2, duration: 0.6 }}
                     viewport={{ once: true }}
                   >
-                    我是一名充满热情的中医内科医师，专注于心血管疾病的中医及中西医结合治疗。
-                    我致力于将传统中医理论与现代医学技术相结合，为患者提供最优质的医疗服务。
+                    我是一名充满热情的前端开发工程师，专注于构建现代化的 Web 和移动应用。
+                    我熟练掌握 Vue, React, Flutter 等主流前端框架，并能灵活运用于各种复杂的业务场景中。
                   </motion.p>
-                  <motion.p 
+                  <motion.p
                     className="text-gray-600 leading-relaxed text-lg"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3, duration: 0.6 }}
                     viewport={{ once: true }}
                   >
-                    在临床工作中，我积累了丰富的诊疗经验，
-                    尤其在老年心血管疾病、慢性病管理等方面有独到见解。
-                    我相信中医药的智慧能够为现代医学提供有益补充，帮助患者恢复健康。
+                    在过去的工作中，我参与过多个大型项目的开发与维护，积累了丰富的实战经验。
+                    我注重代码的可维护性和扩展性，同时也非常关注用户体验的细节打磨。
                   </motion.p>
-                  <motion.p 
+                  <motion.p
                     className="text-gray-600 leading-relaxed text-lg"
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4, duration: 0.6 }}
                     viewport={{ once: true }}
                   >
-                    除了临床工作，我还热心于中医药知识的传播和健康教育。
-                    我希望通过专业的医疗服务和健康指导，帮助更多人提升生活质量。
+                    除了日常开发，我还热衷于技术分享和开源社区，喜欢探索新技术并将其应用到实际工作中。
+                    我相信技术的力量，希望能通过我的努力，为用户创造更大的价值。
                   </motion.p>
 
                   {/* 教育背景 */}
@@ -165,13 +164,13 @@ export default function About() {
                       <Award className="w-5 h-5 text-blue-600" />
                       教育背景
                     </h4>
-                    <p className="font-medium text-gray-900">中医内科学 硕士研究生</p>
-                    <p className="text-gray-600">河南中医药大学 | 心血管方向</p>
+                    <p className="font-medium text-gray-900">计算机科学与技术 本科</p>
+                    <p className="text-gray-600">全日制本科 | 前端开发方向</p>
                   </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
-            
+
             {/* 右侧：技能展示 */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
