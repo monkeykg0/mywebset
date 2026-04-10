@@ -639,47 +639,65 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
       <div style={{ maxWidth:680, margin:'0 auto', position:'relative', zIndex:1 }}>
 
         {/* ── 主人格卡片 ── */}
-        <div style={{ ...fadeIn(step >= 1), background:'#fff', borderRadius:24, padding:'28px 24px', boxShadow:`0 16px 60px ${primary.color}25`, border:`3px solid ${primary.color}20`, marginBottom:14, position:'relative', overflow:'hidden' }}>
-          <div style={{ position:'absolute', top:0, left:0, right:0, height:5, background:`linear-gradient(90deg,${primary.color},#FFD23F)` }} />
+        <div style={{ ...fadeIn(step >= 1), background:'#fff', borderRadius:24, boxShadow:`0 16px 60px ${primary.color}25`, border:`2px solid ${primary.color}18`, marginBottom:14, position:'relative', overflow:'hidden' }}>
+          {/* 顶部渐变色条 */}
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:4, background:`linear-gradient(90deg,${primary.color},#FFD23F)` }} />
 
-          <div style={{ marginBottom:20, paddingTop:6 }}>
-            <span style={{ padding:'4px 14px', borderRadius:20, fontSize:11, fontWeight:700, letterSpacing:'0.1em', background:rarityLabel.bg, color:rarityLabel.color }}>
+          {/* 稀有度 badge 行 */}
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'16px 20px 0' }}>
+            <span style={{ padding:'4px 12px', borderRadius:20, fontSize:10, fontWeight:700, letterSpacing:'0.08em', background:rarityLabel.bg, color:rarityLabel.color }}>
               {rarityLabel.text} · {primary.rarityRate}
             </span>
+            {primary.pattern && (
+              <span style={{ fontSize:10, background:`${primary.color}12`, color:primary.color, padding:'4px 10px', borderRadius:20, fontWeight:700 }}>
+                命中 {exactHits}/15 维
+              </span>
+            )}
           </div>
 
-          {/* 像素人物 + 信息 横排 */}
-          <div style={{ display:'flex', alignItems:'flex-start', gap:20, flexWrap:'wrap' }}>
+          {/* 主体：左列（像素角色+匹配度）+ 右列（代号+名称+引言+描述）*/}
+          <div style={{ display:'flex', gap:0, padding:'16px 20px 20px' }}>
 
-            {/* 像素人物区 */}
-            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:10, flexShrink:0 }}>
-              <div style={{ background:`${primary.color}10`, borderRadius:18, padding:'14px 14px 8px', border:`2px solid ${primary.color}20`, position:'relative' }}>
-                <div style={{ position:'absolute', bottom:8, left:'50%', transform:'translateX(-50%)', width:56, height:6, borderRadius:'50%', background:`${primary.color}25`, filter:'blur(3px)' }} />
+            {/* 左列 */}
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:8, flexShrink:0, width:130 }}>
+              {/* 像素角色卡 */}
+              <div style={{ background:`${primary.color}0d`, borderRadius:16, padding:'12px 12px 6px', border:`2px solid ${primary.color}18`, position:'relative', width:'100%', display:'flex', justifyContent:'center' }}>
+                <div style={{ position:'absolute', bottom:6, left:'50%', transform:'translateX(-50%)', width:52, height:5, borderRadius:'50%', background:`${primary.color}20`, filter:'blur(4px)' }} />
                 <PixelCharacter code={primary.code} color={primary.color} size={18} animate />
               </div>
-              <div style={{ textAlign:'center' }}>
-                <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:26, color:primary.color, lineHeight:1 }}>{matchRate}%</div>
-                <div style={{ fontSize:10, color:'#bbb', marginBottom:4 }}>匹配度</div>
-                {primary.pattern && (
-                  <div style={{ fontSize:10, background:`${primary.color}15`, color:primary.color, padding:'3px 8px', borderRadius:8, fontWeight:700, whiteSpace:'nowrap' }}>
-                    命中 {exactHits}/15 维
-                  </div>
-                )}
+              {/* 匹配度数字 */}
+              <div style={{ textAlign:'center', background:`${primary.color}08`, borderRadius:12, padding:'8px 0', width:'100%' }}>
+                <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:28, color:primary.color, lineHeight:1, fontWeight:700 }}>{matchRate}%</div>
+                <div style={{ fontSize:10, color:'#bbb', marginTop:2, letterSpacing:'0.05em' }}>匹配度</div>
               </div>
             </div>
 
-            {/* 文字信息 */}
-            <div style={{ flex:1, minWidth:0 }}>
-              <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:'clamp(36px,10vw,72px)', fontWeight:700, lineHeight:0.9, color:primary.color, letterSpacing:'-0.02em', marginBottom:6, wordBreak:'break-all' }}>
-                {primary.code}
+            {/* 分割线 */}
+            <div style={{ width:1, background:`${primary.color}15`, margin:'0 16px', flexShrink:0, borderRadius:1 }} />
+
+            {/* 右列 */}
+            <div style={{ flex:1, minWidth:0, display:'flex', flexDirection:'column', gap:8 }}>
+              {/* 代号 + emoji名 */}
+              <div>
+                <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:'clamp(38px,10vw,68px)', fontWeight:700, lineHeight:0.85, color:primary.color, letterSpacing:'-0.01em', wordBreak:'break-all' }}>
+                  {primary.code}
+                </div>
+                <div style={{ fontSize:13, color:'#999', marginTop:5, fontWeight:400, display:'flex', alignItems:'center', gap:5 }}>
+                  <span style={{ fontSize:16 }}>{primary.emoji}</span>
+                  <span>{primary.name}</span>
+                </div>
               </div>
-              <div style={{ fontSize:14, color:'#999', marginBottom:12, fontWeight:300 }}>
-                {primary.emoji} {primary.name}
+
+              {/* 引言气泡 */}
+              <div style={{ background:`${primary.color}0f`, border:`1.5px solid ${primary.color}25`, borderRadius:12, padding:'9px 12px', position:'relative' }}>
+                <div style={{ position:'absolute', left:14, top:-6, width:10, height:10, background:`${primary.color}0f`, border:`1.5px solid ${primary.color}25`, borderRight:'none', borderBottom:'none', transform:'rotate(45deg)' }} />
+                <p style={{ fontSize:13, color:'#1a1a2e', fontWeight:600, lineHeight:1.6, margin:0 }}>
+                  "{primary.tagline}"
+                </p>
               </div>
-              <div style={{ fontSize:14, color:'#1a1a2e', fontWeight:700, marginBottom:12, lineHeight:1.5, background:`${primary.color}12`, padding:'10px 14px', borderRadius:12, borderLeft:`4px solid ${primary.color}` }}>
-                "{primary.tagline}"
-              </div>
-              <p style={{ color:'#666', fontSize:12, lineHeight:1.9, margin:0 }}>
+
+              {/* 描述 */}
+              <p style={{ color:'#777', fontSize:12, lineHeight:1.85, margin:0 }}>
                 {primary.description}
               </p>
             </div>
