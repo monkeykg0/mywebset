@@ -1,0 +1,618 @@
+'use client'
+
+import { useState, useEffect, useRef, useCallback } from 'react'
+import {
+  questions, calculateResult, personalities,
+  DIM_META, DIM_EXPLAIN, DIM_ORDER,
+} from './data'
+import type { DimKey, DimLevel, CalcResult } from './data'
+import { PixelCharacter } from './pixel-characters'
+
+// ─── localStorage 键 ────────────────────────────────────
+const LS_KEY = 'sbti_progress_v1'
+
+interface SavedProgress {
+  phase: 'test'
+  qIndex: number
+  rawScores: Partial<Record<DimKey, number>>
+  drinkTriggered: boolean
+  drunkUnlocked: boolean
+}
+
+function saveProgress(p: SavedProgress) {
+  try { localStorage.setItem(LS_KEY, JSON.stringify(p)) } catch {}
+}
+
+function loadProgress(): SavedProgress | null {
+  try {
+    const s = localStorage.getItem(LS_KEY)
+    if (!s) return null
+    return JSON.parse(s) as SavedProgress
+  } catch { return null }
+}
+
+function clearProgress() {
+  try { localStorage.removeItem(LS_KEY) } catch {}
+}
+
+// ─── 主页面（答题） ────────────────────────────────────
+export default function SBTIPage() {
+  const [phase, setPhase] = useState<'intro' | 'test' | 'result'>('intro')
+  const [qIndex, setQIndex] = useState(0)
+  const [rawScores, setRawScores] = useState<Partial<Record<DimKey, number>>>({})
+  const [drinkTriggered, setDrinkTriggered] = useState(false)
+  const [drunkUnlocked, setDrunkUnlocked] = useState(false)
+  const [selected, setSelected] = useState<number | null>(null)
+  const [animOut, setAnimOut] = useState(false)
+  const [result, setResult] = useState<CalcResult | null>(null)
+  const [resumeBanner, setResumeBanner] = useState(false)
+
+  // 读取 localStorage 恢复进度
+  useEffect(() => {
+    const saved = loadProgress()
+    if (saved) setResumeBanner(true)
+  }, [])
+
+  function resumeProgress() {
+    const saved = loadProgress()
+    if (!saved) return
+    setQIndex(saved.qIndex)
+    setRawScores(saved.rawScores)
+    setDrinkTriggered(saved.drinkTriggered)
+    setDrunkUnlocked(saved.drunkUnlocked)
+    setResumeBanner(false)
+    setPhase('test')
+  }
+
+  function discardProgress() {
+    clearProgress()
+    setResumeBanner(false)
+  }
+
+  const visibleQs = questions.filter(q => !q.isHidden || drinkTriggered)
+  const current = visibleQs[qIndex]
+  const total = visibleQs.length
+  const progress = Math.round((qIndex / total) * 100)
+
+  function handleOption(idx: number) {
+    if (selected !== null || animOut) return
+    setSelected(idx)
+
+    const opt = current.options[idx]
+    const next: Partial<Record<DimKey, number>> = { ...rawScores }
+    for (const [dim, val] of Object.entries(opt.scores)) {
+      const k = dim as DimKey
+      next[k] = (next[k] ?? 0) + (val as number)
+    }
+
+    let newDrunk = drunkUnlocked
+    let newDrink = drinkTriggered
+    if (opt.drinkTrigger) newDrink = true
+    if (opt.drunkUnlock) newDrunk = true
+
+    setRawScores(next)
+    if (newDrink !== drinkTriggered) setDrinkTriggered(newDrink)
+    if (newDrunk !== drunkUnlocked) setDrunkUnlocked(newDrunk)
+
+    setTimeout(() => {
+      setAnimOut(true)
+      setTimeout(() => {
+        const nextQs = questions.filter(q => !q.isHidden || newDrink)
+        const nextIdx = qIndex + 1
+        if (nextIdx >= nextQs.length) {
+          clearProgress()
+          const r = calculateResult(next, newDrunk)
+          setResult(r)
+          setPhase('result')
+        } else {
+          // 保存进度
+          saveProgress({ phase: 'test', qIndex: nextIdx, rawScores: next, drinkTriggered: newDrink, drunkUnlocked: newDrunk })
+          setQIndex(nextIdx)
+        }
+        setSelected(null)
+        setAnimOut(false)
+      }, 300)
+    }, 550)
+  }
+
+  function restart() {
+    clearProgress()
+    setPhase('intro'); setQIndex(0); setRawScores({})
+    setDrinkTriggered(false); setDrunkUnlocked(false)
+    setSelected(null); setAnimOut(false); setResult(null)
+  }
+
+  if (phase === 'intro') return (
+    <IntroScreen
+      onStart={() => setPhase('test')}
+      resumeBanner={resumeBanner}
+      onResume={resumeProgress}
+      onDiscard={discardProgress}
+    />
+  )
+  if (phase === 'result' && result) return <ResultScreen result={result} onRestart={restart} />
+
+  const groupColors: Record<string, string> = {
+    '自我模型': '#FF6B35', '情感模型': '#E91E8C',
+    '态度模型': '#7C3AED', '行动驱力模型': '#0EA5E9',
+    '社交模型': '#10B981', '特殊': '#F59E0B',
+  }
+  const gc = groupColors[current.group] ?? '#FF6B35'
+
+  return (
+    <div style={{ minHeight: '100vh', background: 'linear-gradient(135deg,#FFFBF0 0%,#FFF5E0 50%,#FFECD2 100%)', fontFamily:"'Noto Sans SC',sans-serif", position:'relative', overflow:'hidden' }}>
+      <SunnyBg />
+
+      {/* 进度条 */}
+      <div style={{ position:'fixed', top:0, left:0, right:0, height:5, background:'rgba(0,0,0,0.06)', zIndex:100 }}>
+        <div style={{ height:'100%', background:`linear-gradient(90deg,${gc},#FFD23F)`, width:`${progress}%`, transition:'width 0.4s ease', borderRadius:'0 4px 4px 0' }} />
+      </div>
+
+      {/* 题号 */}
+      <div style={{ position:'fixed', top:12, right:16, zIndex:100, background:gc, color:'#fff', borderRadius:20, padding:'4px 14px', fontWeight:700, fontSize:13, boxShadow:`0 4px 12px ${gc}50` }}>
+        {qIndex + 1} / {total}
+      </div>
+
+      <div style={{ minHeight:'100vh', display:'flex', alignItems:'center', justifyContent:'center', padding:'80px 16px 40px' }}>
+        <div style={{ width:'100%', maxWidth:600, opacity:animOut?0:1, transform:animOut?'translateY(-16px)':'translateY(0)', transition:'opacity 0.3s ease,transform 0.3s ease' }}>
+
+          <div style={{ marginBottom:16 }}>
+            <span style={{ display:'inline-block', padding:'5px 16px', background:gc, color:'#fff', borderRadius:20, fontSize:12, fontWeight:700, letterSpacing:'0.05em', boxShadow:`0 4px 12px ${gc}40` }}>
+              {current.group}
+            </span>
+          </div>
+
+          {/* 题目卡片 */}
+          <div style={{ background:'#fff', borderRadius:20, padding:'24px 24px', boxShadow:'0 8px 40px rgba(0,0,0,0.08)', marginBottom:16, border:`2px solid ${gc}20`, position:'relative', overflow:'hidden' }}>
+            <div style={{ position:'absolute', top:0, right:0, width:70, height:70, background:`linear-gradient(225deg,${gc}18,transparent)`, borderRadius:'0 20px 0 70px' }} />
+            <div style={{ fontSize:'clamp(16px,3.5vw,22px)', fontWeight:700, color:'#1a1a2e', lineHeight:1.65, position:'relative' }}>
+              {current.text}
+            </div>
+          </div>
+
+          {/* 选项 */}
+          <div style={{ display:'flex', flexDirection:'column', gap:10 }}>
+            {current.options.map((opt, idx) => {
+              const isSelected = selected === idx
+              return (
+                <button key={idx} onClick={() => handleOption(idx)} disabled={selected !== null} style={{
+                  background: isSelected ? gc : '#fff',
+                  border: `2px solid ${isSelected ? gc : 'rgba(0,0,0,0.08)'}`,
+                  borderRadius:14, padding:'14px 18px', textAlign:'left',
+                  color: isSelected ? '#fff' : '#2d2d2d',
+                  fontFamily:"'Noto Sans SC',sans-serif", fontSize:'clamp(13px,2.5vw,15px)', lineHeight:1.6,
+                  cursor: selected !== null ? 'default' : 'pointer',
+                  width:'100%', display:'flex', alignItems:'center', gap:12,
+                  transition:'all 0.2s ease',
+                  boxShadow: isSelected ? `0 6px 20px ${gc}40` : '0 2px 8px rgba(0,0,0,0.05)',
+                  transform: isSelected ? 'translateX(6px)' : 'translateX(0)',
+                  WebkitTapHighlightColor: 'transparent',
+                }}>
+                  <span style={{ display:'inline-flex', alignItems:'center', justifyContent:'center', width:30, height:30, borderRadius:'50%', background: isSelected?'rgba(255,255,255,0.25)':`${gc}15`, color: isSelected?'#fff':gc, fontSize:11, fontWeight:800, flexShrink:0 }}>
+                    {isSelected ? '✓' : ['A','B','C'][idx]}
+                  </span>
+                  <span>{opt.text}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* 进度点 */}
+          <div style={{ display:'flex', justifyContent:'center', gap:3, marginTop:24, flexWrap:'wrap', maxWidth:'100%' }}>
+            {Array.from({ length: Math.min(total,31) }, (_,i) => (
+              <div key={i} style={{ width:i===qIndex?16:5, height:5, borderRadius:3, background:i<qIndex?gc:i===qIndex?gc:'rgba(0,0,0,0.12)', transition:'all 0.3s ease' }} />
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// ─── 介绍页 ────────────────────────────────────────────
+function IntroScreen({ onStart, resumeBanner, onResume, onDiscard }: {
+  onStart: () => void
+  resumeBanner: boolean
+  onResume: () => void
+  onDiscard: () => void
+}) {
+  const [hover, setHover] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  useEffect(() => { setTimeout(() => setMounted(true), 50) }, [])
+
+  return (
+    <div style={{ minHeight:'100vh', background:'linear-gradient(135deg,#FFFBF0 0%,#FFF5E0 50%,#FFECD2 100%)', fontFamily:"'Noto Sans SC',sans-serif", display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 16px', position:'relative', overflow:'hidden' }}>
+      <SunnyBg />
+
+      {/* 恢复进度 banner */}
+      {resumeBanner && (
+        <div style={{
+          position:'fixed', top:16, left:'50%', transform:'translateX(-50%)',
+          zIndex:200, background:'#1a1a2e', color:'#fff', borderRadius:16,
+          padding:'14px 20px', boxShadow:'0 8px 32px rgba(0,0,0,0.2)',
+          display:'flex', alignItems:'center', gap:12, fontSize:13,
+          maxWidth:'calc(100vw - 32px)', width:'max-content',
+        }}>
+          <span>⚡</span>
+          <span>发现上次未完成的测试</span>
+          <button onClick={onResume} style={{ background:'#FF6B35', color:'#fff', border:'none', borderRadius:8, padding:'5px 14px', fontSize:12, fontWeight:700, cursor:'pointer' }}>继续</button>
+          <button onClick={onDiscard} style={{ background:'rgba(255,255,255,0.1)', color:'#ccc', border:'none', borderRadius:8, padding:'5px 10px', fontSize:12, cursor:'pointer' }}>重新开始</button>
+        </div>
+      )}
+
+      <div style={{ position:'relative', zIndex:1, textAlign:'center', maxWidth:640, width:'100%',
+        opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(20px)',
+        transition: 'opacity 0.6s ease, transform 0.6s ease',
+      }}>
+        {/* Logo */}
+        <div style={{ marginBottom:8, position:'relative', display:'inline-block',
+          opacity: mounted ? 1 : 0, transform: mounted ? 'scale(1)' : 'scale(0.9)',
+          transition: 'opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s',
+        }}>
+          <div style={{ position:'absolute', top:-20, right:-30, fontSize:36, animation:'wobble 3s ease-in-out infinite' }}>✨</div>
+          <div style={{ position:'absolute', bottom:-10, left:-24, fontSize:28, animation:'wobble2 4s ease-in-out infinite' }}>🌟</div>
+          <div style={{ fontFamily:"'Fredoka One',cursive,'Noto Sans SC',sans-serif", fontSize:'clamp(64px,18vw,130px)', fontWeight:700, lineHeight:0.95, letterSpacing:'-0.02em', background:'linear-gradient(135deg,#FF6B35 0%,#FF2D78 40%,#7C3AED 100%)', WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent', backgroundClip:'text' }}>
+            SBTI
+          </div>
+        </div>
+
+        <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:'clamp(14px,3vw,22px)', color:'#FF6B35', letterSpacing:'0.2em', marginBottom:24,
+          opacity: mounted ? 1 : 0, transition: 'opacity 0.6s ease 0.2s',
+        }}>
+          人 格 测 试
+        </div>
+
+        <div style={{ background:'#fff', borderRadius:20, padding:'20px 24px', marginBottom:24, boxShadow:'0 8px 32px rgba(255,107,53,0.12)', border:'2px solid rgba(255,107,53,0.1)', position:'relative',
+          opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s',
+        }}>
+          <div style={{ position:'absolute', top:-12, left:20, background:'#FF6B35', color:'#fff', padding:'2px 12px', borderRadius:10, fontSize:11, fontWeight:700 }}>
+            ⚡ 2026 最火测试
+          </div>
+          <p style={{ margin:0, color:'#555', fontSize:'clamp(13px,2vw,15px)', lineHeight:2 }}>
+            不是玄学，不是算命。<br />
+            <strong style={{ color:'#FF6B35' }}>31道题</strong> · <strong style={{ color:'#E91E8C' }}>15个维度</strong> · <strong style={{ color:'#7C3AED' }}>27种人格</strong><br />
+            看见那个你不太敢承认的自己。
+          </p>
+        </div>
+
+        <div style={{ display:'flex', flexWrap:'wrap', gap:8, justifyContent:'center', marginBottom:32,
+          opacity: mounted ? 1 : 0, transition: 'opacity 0.6s ease 0.4s',
+        }}>
+          {[['官方曼哈顿算法','#FF6B35'],['隐藏结局 DRUNK','#F59E0B'],['HHHH 传说人格','#7C3AED'],['仅供娱乐','#10B981']].map(([t,c]) => (
+            <span key={t} style={{ padding:'5px 14px', borderRadius:20, fontSize:11, fontWeight:700, background:`${c}18`, color:c, border:`1.5px solid ${c}30` }}>{t}</span>
+          ))}
+        </div>
+
+        <div style={{
+          opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(12px)',
+          transition: 'opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s',
+        }}>
+          <button onClick={onStart} onMouseEnter={() => setHover(true)} onMouseLeave={() => setHover(false)} style={{
+            padding:'16px 56px',
+            background: hover ? 'linear-gradient(135deg,#FF2D78,#FF6B35)' : 'linear-gradient(135deg,#FF6B35,#FF9F1C)',
+            color:'#fff', border:'none', borderRadius:50,
+            fontSize:'clamp(15px,3vw,18px)', fontFamily:"'Fredoka One',cursive,'Noto Sans SC',sans-serif",
+            fontWeight:700, letterSpacing:'0.08em', cursor:'pointer',
+            boxShadow: hover ? '0 12px 40px rgba(255,45,120,0.4)' : '0 8px 28px rgba(255,107,53,0.35)',
+            transform: hover ? 'translateY(-3px) scale(1.03)' : 'translateY(0) scale(1)',
+            transition:'all 0.25s ease',
+            WebkitTapHighlightColor: 'transparent',
+            touchAction: 'manipulation',
+          }}>
+            {hover ? '⚡ 开始测试！' : '开始测试'}
+          </button>
+        </div>
+
+        <div style={{ display:'flex', gap:0, justifyContent:'center', marginTop:36, flexWrap:'wrap',
+          opacity: mounted ? 1 : 0, transition: 'opacity 0.6s ease 0.6s',
+        }}>
+          {[['31','道题目','#FF6B35'],['27','种人格','#E91E8C'],['15','维度','#7C3AED'],['1','隐藏结局','#F59E0B']].map(([n,l,c],i) => (
+            <div key={l} style={{ textAlign:'center', padding:'0 16px', borderRight:i<3?'2px solid rgba(0,0,0,0.08)':'none' }}>
+              <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:'clamp(28px,7vw,40px)', fontWeight:700, color:c, lineHeight:1 }}>{n}</div>
+              <div style={{ fontSize:11, color:'#999', marginTop:4 }}>{l}</div>
+            </div>
+          ))}
+        </div>
+
+        <p style={{ marginTop:32, fontSize:11, color:'#bbb', lineHeight:2 }}>
+          本测试仅供娱乐，别拿它当诊断、面试、相亲、分手、招魂、算命或人生判决书。
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ─── 结果页 ────────────────────────────────────────────
+function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: () => void }) {
+  const { primary, secondary, matchRate, dimLevels } = result
+  const [step, setStep] = useState(0)
+  const [copied, setCopied] = useState(false)
+  const canvasRef = useRef<HTMLCanvasElement>(null)
+
+  // 分步入场：0=hidden, 1=主卡片, 2=次要+按钮, 3=维度, 4=图鉴
+  useEffect(() => {
+    const timings = [150, 500, 900, 1300]
+    const timers = timings.map((t, i) => setTimeout(() => setStep(i + 1), t))
+    return () => timers.forEach(clearTimeout)
+  }, [])
+
+  // 计算精准命中维度数
+  const DIM_KEYS = ['S1','S2','S3','E1','E2','E3','A1','A2','A3','Ac1','Ac2','Ac3','So1','So2','So3'] as DimKey[]
+  function parsePatternLevels(pattern: string): DimLevel[] {
+    return pattern.split('-').flatMap(seg => seg.split('').map(c => c as DimLevel))
+  }
+  const patternLevels = primary.pattern ? parsePatternLevels(primary.pattern) : []
+  const exactHits = patternLevels.reduce((count, lvl, i) => {
+    return count + (dimLevels[DIM_KEYS[i]] === lvl ? 1 : 0)
+  }, 0)
+
+  // 生成分享卡片
+  const generateShareCard = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+    const W = 600, H = 360
+    canvas.width = W; canvas.height = H
+    const ctx = canvas.getContext('2d')!
+
+    // 背景渐变
+    const bg = ctx.createLinearGradient(0, 0, W, H)
+    bg.addColorStop(0, '#FFFBF0')
+    bg.addColorStop(0.5, '#FFF5E0')
+    bg.addColorStop(1, '#FFECD2')
+    ctx.fillStyle = bg
+    ctx.fillRect(0, 0, W, H)
+
+    // 装饰圆
+    const grd = ctx.createRadialGradient(W, 0, 0, W, 0, 300)
+    grd.addColorStop(0, primary.color + '30')
+    grd.addColorStop(1, 'transparent')
+    ctx.fillStyle = grd
+    ctx.fillRect(0, 0, W, H)
+
+    // 主卡片
+    roundRect(ctx, 24, 24, W - 48, H - 48, 20)
+    ctx.fillStyle = '#fff'
+    ctx.fill()
+    ctx.strokeStyle = primary.color + '30'
+    ctx.lineWidth = 2
+    ctx.stroke()
+
+    // 顶边彩条
+    ctx.fillStyle = primary.color
+    roundRect(ctx, 24, 24, W - 48, 6, [20, 20, 0, 0])
+    ctx.fill()
+
+    // 人格代码
+    ctx.fillStyle = primary.color
+    ctx.font = `bold 72px "Arial"`
+    ctx.fillText(primary.code, 44, 130)
+
+    // 名称
+    ctx.fillStyle = '#888'
+    ctx.font = `24px "Arial"`
+    ctx.fillText(`${primary.emoji} ${primary.name}`, 44, 168)
+
+    // tagline
+    ctx.fillStyle = '#1a1a2e'
+    ctx.font = `bold 16px "Arial"`
+    const tag = `"${primary.tagline.slice(0, 30)}${primary.tagline.length > 30 ? '...' : ''}"`
+    ctx.fillText(tag, 44, 220)
+
+    // 匹配度 badge
+    ctx.fillStyle = primary.color + '20'
+    roundRect(ctx, 44, 246, 200, 44, 12)
+    ctx.fill()
+    ctx.fillStyle = primary.color
+    ctx.font = `bold 28px "Arial"`
+    ctx.fillText(`${matchRate}%`, 60, 278)
+    ctx.font = `14px "Arial"`
+    ctx.fillStyle = '#888'
+    ctx.fillText(`匹配度 · 精准命中 ${exactHits}/15 维`, 110, 278)
+
+    // 右下 SBTI 水印
+    ctx.fillStyle = '#ddd'
+    ctx.font = `bold 48px "Arial"`
+    ctx.fillText('SBTI', W - 140, H - 40)
+
+    // 下载
+    const a = document.createElement('a')
+    a.download = `sbti-${primary.code}.png`
+    a.href = canvas.toDataURL('image/png')
+    a.click()
+  }, [primary, matchRate, exactHits])
+
+  function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number | number[]) {
+    const [tl, tr, br, bl] = Array.isArray(r) ? r : [r, r, r, r]
+    ctx.beginPath()
+    ctx.moveTo(x + tl, y)
+    ctx.lineTo(x + w - tr, y)
+    ctx.quadraticCurveTo(x + w, y, x + w, y + tr)
+    ctx.lineTo(x + w, y + h - br)
+    ctx.quadraticCurveTo(x + w, y + h, x + w - br, y + h)
+    ctx.lineTo(x + bl, y + h)
+    ctx.quadraticCurveTo(x, y + h, x, y + h - bl)
+    ctx.lineTo(x, y + tl)
+    ctx.quadraticCurveTo(x, y, x + tl, y)
+    ctx.closePath()
+  }
+
+  function handleCopy() {
+    navigator.clipboard.writeText(`我的 SBTI 人格是：${primary.name}（${primary.code}）${primary.emoji}\n"${primary.tagline}"\n匹配度 ${matchRate}% · 精准命中 ${exactHits}/15 维\n测一测你的：https://sbti.fancc.de5.net`)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  const groups = [
+    { label:'自我模型', dims:['S1','S2','S3'] as DimKey[], color:'#FF6B35' },
+    { label:'情感模型', dims:['E1','E2','E3'] as DimKey[], color:'#E91E8C' },
+    { label:'态度模型', dims:['A1','A2','A3'] as DimKey[], color:'#7C3AED' },
+    { label:'行动驱力', dims:['Ac1','Ac2','Ac3'] as DimKey[], color:'#0EA5E9' },
+    { label:'社交模型', dims:['So1','So2','So3'] as DimKey[], color:'#10B981' },
+  ]
+
+  const rarityLabel = primary.rarity === 'legendary'
+    ? { text:'🌟 传说人格', bg:'#F59E0B', color:'#fff' }
+    : primary.rarity === 'rare'
+    ? { text:'✦ 稀有人格', bg:'#7C3AED', color:'#fff' }
+    : { text:'普通人格', bg:'rgba(0,0,0,0.06)', color:'#888' }
+
+  const fadeIn = (visible: boolean, delay = 0) => ({
+    opacity: visible ? 1 : 0,
+    transform: visible ? 'translateY(0)' : 'translateY(20px)',
+    transition: `opacity 0.5s ease ${delay}ms, transform 0.5s ease ${delay}ms`,
+  })
+
+  return (
+    <div style={{ minHeight:'100vh', background:'linear-gradient(135deg,#FFFBF0 0%,#FFF5E0 50%,#FFECD2 100%)', fontFamily:"'Noto Sans SC',sans-serif", padding:'40px 16px 48px', position:'relative', overflow:'hidden' }}>
+      <SunnyBg />
+      {/* 隐藏 canvas for share card */}
+      <canvas ref={canvasRef} style={{ display:'none' }} />
+
+      <div style={{ maxWidth:680, margin:'0 auto', position:'relative', zIndex:1 }}>
+
+        {/* ── 主人格卡片 ── */}
+        <div style={{ ...fadeIn(step >= 1), background:'#fff', borderRadius:24, padding:'28px 24px', boxShadow:`0 16px 60px ${primary.color}25`, border:`3px solid ${primary.color}20`, marginBottom:14, position:'relative', overflow:'hidden' }}>
+          <div style={{ position:'absolute', top:0, left:0, right:0, height:5, background:`linear-gradient(90deg,${primary.color},#FFD23F)` }} />
+
+          <div style={{ marginBottom:20, paddingTop:6 }}>
+            <span style={{ padding:'4px 14px', borderRadius:20, fontSize:11, fontWeight:700, letterSpacing:'0.1em', background:rarityLabel.bg, color:rarityLabel.color }}>
+              {rarityLabel.text} · {primary.rarityRate}
+            </span>
+          </div>
+
+          {/* 像素人物 + 信息 横排 */}
+          <div style={{ display:'flex', alignItems:'flex-start', gap:20, flexWrap:'wrap' }}>
+
+            {/* 像素人物区 */}
+            <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:10, flexShrink:0 }}>
+              <div style={{ background:`${primary.color}10`, borderRadius:18, padding:'14px 14px 8px', border:`2px solid ${primary.color}20`, position:'relative' }}>
+                <div style={{ position:'absolute', bottom:8, left:'50%', transform:'translateX(-50%)', width:56, height:6, borderRadius:'50%', background:`${primary.color}25`, filter:'blur(3px)' }} />
+                <PixelCharacter code={primary.code} color={primary.color} size={12} animate />
+              </div>
+              <div style={{ textAlign:'center' }}>
+                <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:26, color:primary.color, lineHeight:1 }}>{matchRate}%</div>
+                <div style={{ fontSize:10, color:'#bbb', marginBottom:4 }}>匹配度</div>
+                {primary.pattern && (
+                  <div style={{ fontSize:10, background:`${primary.color}15`, color:primary.color, padding:'3px 8px', borderRadius:8, fontWeight:700, whiteSpace:'nowrap' }}>
+                    命中 {exactHits}/15 维
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* 文字信息 */}
+            <div style={{ flex:1, minWidth:0 }}>
+              <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:'clamp(36px,10vw,72px)', fontWeight:700, lineHeight:0.9, color:primary.color, letterSpacing:'-0.02em', marginBottom:6, wordBreak:'break-all' }}>
+                {primary.code}
+              </div>
+              <div style={{ fontSize:14, color:'#999', marginBottom:12, fontWeight:300 }}>
+                {primary.emoji} {primary.name}
+              </div>
+              <div style={{ fontSize:14, color:'#1a1a2e', fontWeight:700, marginBottom:12, lineHeight:1.5, background:`${primary.color}12`, padding:'10px 14px', borderRadius:12, borderLeft:`4px solid ${primary.color}` }}>
+                "{primary.tagline}"
+              </div>
+              <p style={{ color:'#666', fontSize:12, lineHeight:1.9, margin:0 }}>
+                {primary.description}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* 次要人格 + 按钮 */}
+        <div style={{ ...fadeIn(step >= 2) }}>
+          {secondary && (
+            <div style={{ background:'#fff', borderRadius:14, padding:'12px 18px', marginBottom:12, border:'2px solid rgba(0,0,0,0.06)', display:'flex', alignItems:'center', gap:10, boxShadow:'0 4px 16px rgba(0,0,0,0.05)', flexWrap:'wrap' }}>
+              <span style={{ fontSize:20 }}>{secondary.emoji}</span>
+              <div style={{ flex:1, minWidth:0 }}>
+                <div style={{ fontSize:10, color:'#ccc', letterSpacing:'0.1em', marginBottom:1 }}>SECONDARY PERSONA</div>
+                <div style={{ color:secondary.color, fontWeight:700, fontFamily:"'Fredoka One',cursive", fontSize:14 }}>
+                  {secondary.code} · {secondary.name}
+                </div>
+              </div>
+              <div style={{ fontSize:11, color:'#bbb', flexShrink:0 }}>你的另一面</div>
+            </div>
+          )}
+
+          {/* 操作按钮 */}
+          <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:16 }}>
+            <button onClick={onRestart} style={{ flex:1, minWidth:120, padding:'13px 20px', background:`linear-gradient(135deg,${primary.color},#FFD23F)`, border:'none', color:'#fff', borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:`0 6px 20px ${primary.color}40`, WebkitTapHighlightColor:'transparent' }}>
+              🔄 重新测试
+            </button>
+            <button onClick={handleCopy} style={{ flex:1, minWidth:120, padding:'13px 20px', background:'#fff', border:`2px solid ${primary.color}40`, color:primary.color, borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.06)', WebkitTapHighlightColor:'transparent' }}>
+              {copied ? '✓ 已复制' : '📋 复制结果'}
+            </button>
+            <button onClick={generateShareCard} style={{ flex:1, minWidth:120, padding:'13px 20px', background:'#fff', border:`2px solid #10B98140`, color:'#10B981', borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.06)', WebkitTapHighlightColor:'transparent' }}>
+              🖼 下载卡片
+            </button>
+          </div>
+        </div>
+
+        {/* 15维度分析 */}
+        <div style={{ ...fadeIn(step >= 3), background:'#fff', borderRadius:20, padding:'22px 20px', marginBottom:16, boxShadow:'0 4px 24px rgba(0,0,0,0.06)', border:'2px solid rgba(0,0,0,0.04)' }}>
+          <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:16, color:'#1a1a2e', marginBottom:20 }}>📊 15维度分析</div>
+          {groups.map(g => (
+            <div key={g.label} style={{ marginBottom:18 }}>
+              <div style={{ fontSize:10, fontWeight:700, color:g.color, letterSpacing:'0.1em', marginBottom:8, display:'flex', alignItems:'center', gap:5 }}>
+                <span style={{ display:'inline-block', width:7, height:7, borderRadius:'50%', background:g.color }} />
+                {g.label}
+              </div>
+              {g.dims.map(dim => {
+                const level: DimLevel = dimLevels[dim] ?? 'M'
+                const explain = DIM_EXPLAIN[dim][level]
+                const barW = level === 'H' ? 88 : level === 'M' ? 55 : 22
+                return (
+                  <div key={dim} style={{ display:'flex', alignItems:'flex-start', gap:8, marginBottom:8 }}>
+                    <div style={{ flexShrink:0, width:100 }}>
+                      <div style={{ fontSize:10, color:'#888', marginBottom:4 }}>{DIM_META[dim].name}</div>
+                      <div style={{ height:4, background:'rgba(0,0,0,0.06)', borderRadius:3, overflow:'hidden' }}>
+                        <div style={{ height:'100%', width:step>=3?`${barW}%`:'0%', background:g.color, borderRadius:3, transition:'width 1.2s ease' }} />
+                      </div>
+                    </div>
+                    <span style={{ fontSize:10, fontWeight:800, color:g.color, width:16, flexShrink:0, marginTop:1, background:`${g.color}15`, borderRadius:4, textAlign:'center' as const, padding:'1px 0' }}>{level}</span>
+                    <span style={{ fontSize:11, color:'#777', lineHeight:1.65, flex:1 }}>{explain}</span>
+                  </div>
+                )
+              })}
+            </div>
+          ))}
+        </div>
+
+        {/* 27种人格图鉴 */}
+        <div style={{ ...fadeIn(step >= 4), background:'#fff', borderRadius:20, padding:'20px 16px', boxShadow:'0 4px 24px rgba(0,0,0,0.06)', border:'2px solid rgba(0,0,0,0.04)', marginBottom:28 }}>
+          <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:15, color:'#1a1a2e', marginBottom:14 }}>🎴 27种人格图鉴</div>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fill,minmax(76px,1fr))', gap:6 }}>
+            {personalities.map(p => {
+              const isMe = p.code === primary.code
+              return (
+                <div key={p.code} style={{ padding:'8px 4px', borderRadius:10, textAlign:'center', background:isMe?`${primary.color}15`:'rgba(0,0,0,0.02)', border:`2px solid ${isMe?primary.color+'50':'rgba(0,0,0,0.04)'}`, boxShadow:isMe?`0 4px 16px ${primary.color}25`:'none', transition:'all 0.2s' }}>
+                  <div style={{ display:'flex', justifyContent:'center', marginBottom:3, opacity:isMe?1:0.3 }}>
+                    <PixelCharacter code={p.code} color={p.color} size={5} animate={isMe} />
+                  </div>
+                  <div style={{ fontSize:8, fontWeight:700, color:isMe?p.color:'#bbb', fontFamily:"'Fredoka One',cursive", letterSpacing:'0.02em' }}>{p.code}</div>
+                  <div style={{ fontSize:7, color:'#ddd', marginTop:1 }}>{p.rarityRate}</div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <p style={{ fontSize:11, color:'#ccc', textAlign:'center', lineHeight:2 }}>
+          本测试仅供娱乐，别拿它当诊断、面试、相亲、分手、招魂、算命或人生判决书。<br />
+          算法参考 <a href="https://github.com/serenakeyitan/sbti-wiki" target="_blank" rel="noopener noreferrer" style={{ color:'#FF6B35', textDecoration:'none' }}>serenakeyitan/sbti-wiki</a>
+        </p>
+      </div>
+    </div>
+  )
+}
+
+// ─── 阳光背景 ──────────────────────────────────────────
+function SunnyBg() {
+  return (
+    <div style={{ position:'fixed', inset:0, pointerEvents:'none', overflow:'hidden', zIndex:0 }}>
+      <div style={{ position:'absolute', top:-120, right:-80, width:500, height:500, borderRadius:'50%', background:'radial-gradient(circle,rgba(255,180,50,0.18) 0%,transparent 70%)' }} />
+      <div style={{ position:'absolute', bottom:-100, left:-60, width:400, height:400, borderRadius:'50%', background:'radial-gradient(circle,rgba(255,107,53,0.12) 0%,transparent 70%)' }} />
+      <div style={{ position:'absolute', top:'40%', left:'50%', width:600, height:600, borderRadius:'50%', background:'radial-gradient(circle,rgba(233,30,140,0.06) 0%,transparent 70%)', transform:'translate(-50%,-50%)' }} />
+    </div>
+  )
+}
