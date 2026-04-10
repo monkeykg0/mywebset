@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import {
   questions, calculateResult, personalities,
-  DIM_META, DIM_EXPLAIN, DIM_ORDER,
+  DIM_META, DIM_EXPLAIN,
 } from './data'
 import type { DimKey, DimLevel, CalcResult } from './data'
 import { PixelCharacter, PIXEL_CHARS } from './pixel-characters'
@@ -516,6 +516,79 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
     a.click()
   }, [primary, matchRate, exactHits])
 
+  // 生成像素头像（512×512 方形，适合当头像）
+  const generateAvatar = useCallback(() => {
+    const canvas = canvasRef.current
+    if (!canvas) return
+
+    const SIZE = 512
+    canvas.width = SIZE
+    canvas.height = SIZE
+    const ctx = canvas.getContext('2d')!
+
+    // 背景：用人格主色调渐变
+    const bg = ctx.createLinearGradient(0, 0, SIZE, SIZE)
+    bg.addColorStop(0, primary.color + 'CC')
+    bg.addColorStop(1, primary.color + '55')
+    ctx.fillStyle = bg
+    ctx.fillRect(0, 0, SIZE, SIZE)
+
+    // 内圆底色
+    const innerBg = ctx.createRadialGradient(SIZE / 2, SIZE / 2, 0, SIZE / 2, SIZE / 2, SIZE * 0.48)
+    innerBg.addColorStop(0, 'rgba(255,255,255,0.22)')
+    innerBg.addColorStop(1, 'rgba(255,255,255,0.04)')
+    ctx.fillStyle = innerBg
+    ctx.fillRect(0, 0, SIZE, SIZE)
+
+    // 绘制像素角色（居中，大像素块）
+    const charData = PIXEL_CHARS[primary.code]
+    if (charData) {
+      const grid = charData.grid
+      const cols = grid[0]?.length ?? 10
+      const rows = grid.length
+      // 像素块大小：让角色占画布约 70%
+      const PX = Math.floor((SIZE * 0.70) / Math.max(cols, rows))
+      const charW = cols * PX
+      const charH = rows * PX
+      const offX = Math.floor((SIZE - charW) / 2)
+      const offY = Math.floor((SIZE - charH) / 2)
+
+      // 底部阴影
+      const shadow = ctx.createRadialGradient(
+        SIZE / 2, offY + charH + 8, 0,
+        SIZE / 2, offY + charH + 8, charW * 0.55
+      )
+      shadow.addColorStop(0, 'rgba(0,0,0,0.25)')
+      shadow.addColorStop(1, 'transparent')
+      ctx.fillStyle = shadow
+      ctx.fillRect(0, 0, SIZE, SIZE)
+
+      grid.forEach((row, gy) => {
+        row.split('').forEach((cell, gx) => {
+          if (cell === '0') return
+          if (cell === '1')      ctx.fillStyle = '#ffffff'
+          else if (cell === '2') ctx.fillStyle = charData.accent
+          else if (cell === '3') ctx.fillStyle = primary.color
+          else if (cell === '4') ctx.fillStyle = '#1a1a2e'
+          // 像素块之间留 1px 间隙
+          ctx.fillRect(offX + gx * PX, offY + gy * PX, PX - 1, PX - 1)
+        })
+      })
+    }
+
+    // 右下角水印
+    const CJK = `"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif`
+    ctx.font = `bold ${Math.floor(SIZE * 0.045)}px ${CJK}`
+    ctx.fillStyle = 'rgba(255,255,255,0.55)'
+    ctx.textAlign = 'right'
+    ctx.fillText('SBTI', SIZE - 18, SIZE - 16)
+
+    const a = document.createElement('a')
+    a.download = `sbti-avatar-${primary.code}.png`
+    a.href = canvas.toDataURL('image/png')
+    a.click()
+  }, [primary])
+
   function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number | number[]) {
     const [tl, tr, br, bl] = Array.isArray(r) ? r : [r, r, r, r]
     ctx.beginPath()
@@ -582,7 +655,7 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
             <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:10, flexShrink:0 }}>
               <div style={{ background:`${primary.color}10`, borderRadius:18, padding:'14px 14px 8px', border:`2px solid ${primary.color}20`, position:'relative' }}>
                 <div style={{ position:'absolute', bottom:8, left:'50%', transform:'translateX(-50%)', width:56, height:6, borderRadius:'50%', background:`${primary.color}25`, filter:'blur(3px)' }} />
-                <PixelCharacter code={primary.code} color={primary.color} size={12} animate />
+                <PixelCharacter code={primary.code} color={primary.color} size={18} animate />
               </div>
               <div style={{ textAlign:'center' }}>
                 <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:26, color:primary.color, lineHeight:1 }}>{matchRate}%</div>
@@ -630,9 +703,14 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
 
           {/* 操作按钮 */}
           <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:16 }}>
-            <button onClick={generateShareCard} style={{ width:'100%', padding:'16px 20px', background:`linear-gradient(135deg,${primary.color},#FFD23F)`, border:'none', color:'#fff', borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:16, fontWeight:700, cursor:'pointer', boxShadow:`0 6px 24px ${primary.color}50`, WebkitTapHighlightColor:'transparent', letterSpacing:'0.03em' }}>
-              🖼 下载卡片
-            </button>
+            <div style={{ display:'flex', gap:10 }}>
+              <button onClick={generateShareCard} style={{ flex:1, padding:'16px 20px', background:`linear-gradient(135deg,${primary.color},#FFD23F)`, border:'none', color:'#fff', borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:15, fontWeight:700, cursor:'pointer', boxShadow:`0 6px 24px ${primary.color}50`, WebkitTapHighlightColor:'transparent', letterSpacing:'0.03em' }}>
+                🖼 下载卡片
+              </button>
+              <button onClick={generateAvatar} style={{ flex:1, padding:'16px 20px', background:`linear-gradient(135deg,#1a1a2e,${primary.color})`, border:'none', color:'#fff', borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:15, fontWeight:700, cursor:'pointer', boxShadow:`0 6px 24px ${primary.color}40`, WebkitTapHighlightColor:'transparent', letterSpacing:'0.03em' }}>
+                👾 下载头像
+              </button>
+            </div>
             <div style={{ display:'flex', gap:10 }}>
               <button onClick={onRestart} style={{ flex:1, padding:'13px 20px', background:'#fff', border:`2px solid ${primary.color}40`, color:primary.color, borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.06)', WebkitTapHighlightColor:'transparent' }}>
                 🔄 重新测试
@@ -683,7 +761,7 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
               return (
                 <div key={p.code} style={{ padding:'8px 4px', borderRadius:10, textAlign:'center', background:isMe?`${primary.color}15`:'rgba(0,0,0,0.02)', border:`2px solid ${isMe?primary.color+'50':'rgba(0,0,0,0.04)'}`, boxShadow:isMe?`0 4px 16px ${primary.color}25`:'none', transition:'all 0.2s' }}>
                   <div style={{ display:'flex', justifyContent:'center', marginBottom:3, opacity:isMe?1:0.3 }}>
-                    <PixelCharacter code={p.code} color={p.color} size={5} animate={isMe} />
+                    <PixelCharacter code={p.code} color={p.color} size={7} animate={isMe} />
                   </div>
                   <div style={{ fontSize:8, fontWeight:700, color:isMe?p.color:'#bbb', fontFamily:"'Fredoka One',cursive", letterSpacing:'0.02em' }}>{p.code}</div>
                   <div style={{ fontSize:7, color:'#ddd', marginTop:1 }}>{p.rarityRate}</div>
