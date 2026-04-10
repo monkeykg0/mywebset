@@ -6,7 +6,7 @@ import {
   DIM_META, DIM_EXPLAIN, DIM_ORDER,
 } from './data'
 import type { DimKey, DimLevel, CalcResult } from './data'
-import { PixelCharacter } from './pixel-characters'
+import { PixelCharacter, PIXEL_CHARS } from './pixel-characters'
 
 // ─── localStorage 键 ────────────────────────────────────
 const LS_KEY = 'sbti_progress_v1'
@@ -351,69 +351,163 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
   const generateShareCard = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-    const W = 600, H = 360
-    canvas.width = W; canvas.height = H
+
+    // 9:16 竖屏，适合手机分享
+    const W = 1080, H = 1920
+    canvas.width = W
+    canvas.height = H
     const ctx = canvas.getContext('2d')!
 
-    // 背景渐变
+    const CJK = `"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans SC",sans-serif`
+
+    // ── 背景：暖色阳光渐变 ──
     const bg = ctx.createLinearGradient(0, 0, W, H)
-    bg.addColorStop(0, '#FFFBF0')
-    bg.addColorStop(0.5, '#FFF5E0')
-    bg.addColorStop(1, '#FFECD2')
+    bg.addColorStop(0,   '#FFFBF0')
+    bg.addColorStop(0.5, '#FFF3DC')
+    bg.addColorStop(1,   '#FFE8C2')
     ctx.fillStyle = bg
     ctx.fillRect(0, 0, W, H)
 
-    // 装饰圆
-    const grd = ctx.createRadialGradient(W, 0, 0, W, 0, 300)
-    grd.addColorStop(0, primary.color + '30')
-    grd.addColorStop(1, 'transparent')
-    ctx.fillStyle = grd
+    // 右上装饰光晕（主色调）
+    const glow1 = ctx.createRadialGradient(W, 0, 0, W, 0, 600)
+    glow1.addColorStop(0, primary.color + '40')
+    glow1.addColorStop(1, 'transparent')
+    ctx.fillStyle = glow1
     ctx.fillRect(0, 0, W, H)
 
-    // 主卡片
-    roundRect(ctx, 24, 24, W - 48, H - 48, 20)
-    ctx.fillStyle = '#fff'
+    // 左下装饰光晕
+    const glow2 = ctx.createRadialGradient(0, H, 0, 0, H, 500)
+    glow2.addColorStop(0, primary.color + '22')
+    glow2.addColorStop(1, 'transparent')
+    ctx.fillStyle = glow2
+    ctx.fillRect(0, 0, W, H)
+
+    // ── 顶部色条 ──
+    ctx.fillStyle = primary.color
+    ctx.fillRect(0, 0, W, 16)
+
+    // ── 卡片主体（白色圆角面板）──
+    const CARD_X = 64, CARD_Y = 80, CARD_W = W - 128, CARD_H = H - 220
+    roundRect(ctx, CARD_X, CARD_Y, CARD_W, CARD_H, 40)
+    ctx.fillStyle = 'rgba(255,255,255,0.88)'
     ctx.fill()
-    ctx.strokeStyle = primary.color + '30'
+
+    // ── 像素角色 ──
+    const charData = PIXEL_CHARS[primary.code]
+    const PX = 22
+    // 角色从卡片顶部内边距 100px 开始
+    const CHAR_TOP = CARD_Y + 100
+    const textCX = W / 2
+    ctx.textAlign = 'center'
+
+    if (charData) {
+      const grid = charData.grid
+      const cols = grid[0]?.length ?? 10
+      const rows = grid.length
+      const charW = cols * PX
+      const charH = rows * PX
+      const charX = Math.floor((W - charW) / 2)
+
+      // 角色底部柔和阴影
+      const shadow = ctx.createRadialGradient(
+        W / 2, CHAR_TOP + charH + 10, 0,
+        W / 2, CHAR_TOP + charH + 10, charW * 0.6
+      )
+      shadow.addColorStop(0, primary.color + '28')
+      shadow.addColorStop(1, 'transparent')
+      ctx.fillStyle = shadow
+      ctx.fillRect(0, 0, W, H)
+
+      grid.forEach((row, gy) => {
+        row.split('').forEach((cell, gx) => {
+          if (cell === '0') return
+          if (cell === '1')      ctx.fillStyle = primary.color
+          else if (cell === '2') ctx.fillStyle = charData.accent
+          else if (cell === '3') ctx.fillStyle = '#ffffff'
+          else if (cell === '4') ctx.fillStyle = '#2a2a3e'
+          ctx.fillRect(charX + gx * PX, CHAR_TOP + gy * PX, PX - 2, PX - 2)
+        })
+      })
+    }
+
+    // ── 所有文字坐标：基于角色底部向下累加，间距充足 ──
+    // canvas Y = baseline，所以 topY + fontSize ≈ baseline
+    const charH_total = (charData ? charData.grid.length : 18) * PX
+    const charBottom = CHAR_TOP + charH_total
+
+    // 人格代号  fontSize=114  topMargin=72  bottomMargin=40
+    const CODE_SIZE = 114
+    const CODE_Y = charBottom + 72 + CODE_SIZE  // baseline = top + fontSize
+    ctx.fillStyle = primary.color
+    ctx.font = `bold ${CODE_SIZE}px "Arial", ${CJK}`
+    ctx.fillText(primary.code, textCX, CODE_Y)
+
+    // 稀有度 badge  topMargin=40  badgeH=60
+    const BADGE_H = 60
+    const BADGE_TOP = CODE_Y + 40
+    const rarityText = primary.rarity === 'legendary' ? '★ 传说人格'
+      : primary.rarity === 'rare' ? '◆ 稀有人格' : '普通人格'
+    const rarityColor = primary.rarity === 'legendary' ? '#D97706'
+      : primary.rarity === 'rare' ? '#7C3AED' : '#6B7280'
+    ctx.font = `bold 30px ${CJK}`
+    const badgeW = ctx.measureText(rarityText).width + 56
+    roundRect(ctx, textCX - badgeW / 2, BADGE_TOP, badgeW, BADGE_H, 18)
+    ctx.fillStyle = rarityColor + '22'
+    ctx.fill()
+    ctx.fillStyle = rarityColor
+    ctx.fillText(rarityText, textCX, BADGE_TOP + 40)  // badge内文字垂直居中
+
+    // 名称 + emoji  fontSize=76  topMargin=56
+    const NAME_SIZE = 76
+    const NAME_Y = BADGE_TOP + BADGE_H + 56 + NAME_SIZE
+    ctx.fillStyle = '#1a1a2e'
+    ctx.font = `bold ${NAME_SIZE}px ${CJK}`
+    ctx.fillText(`${primary.emoji} ${primary.name}`, textCX, NAME_Y)
+
+    // tagline  fontSize=36  topMargin=40
+    const TAG_SIZE = 36
+    const TAG_Y = NAME_Y + 40 + TAG_SIZE
+    ctx.fillStyle = '#888899'
+    ctx.font = `${TAG_SIZE}px ${CJK}`
+    const tag = primary.tagline.length > 20
+      ? primary.tagline.slice(0, 20) + '…'
+      : primary.tagline
+    ctx.fillText(`"${tag}"`, textCX, TAG_Y)
+
+    // 分隔线  topMargin=64  bottomMargin=64
+    const LINE_Y = TAG_Y + 64
+    ctx.strokeStyle = primary.color + '35'
     ctx.lineWidth = 2
+    ctx.beginPath()
+    ctx.moveTo(CARD_X + 120, LINE_Y)
+    ctx.lineTo(CARD_X + CARD_W - 120, LINE_Y)
     ctx.stroke()
 
-    // 顶边彩条
+    // 匹配度数字  fontSize=148  topMargin=64
+    const RATE_SIZE = 148
+    const RATE_Y = LINE_Y + 64 + RATE_SIZE
     ctx.fillStyle = primary.color
-    roundRect(ctx, 24, 24, W - 48, 6, [20, 20, 0, 0])
-    ctx.fill()
+    ctx.font = `bold ${RATE_SIZE}px "Arial", ${CJK}`
+    ctx.fillText(`${matchRate}%`, textCX, RATE_Y)
 
-    // 人格代码
-    ctx.fillStyle = primary.color
-    ctx.font = `bold 72px "Arial"`
-    ctx.fillText(primary.code, 44, 130)
+    // 匹配度标签  fontSize=36  topMargin=20
+    const RATE_LABEL_SIZE = 36
+    const RATE_LABEL_Y = RATE_Y + 20 + RATE_LABEL_SIZE
+    ctx.fillStyle = '#aaaacc'
+    ctx.font = `${RATE_LABEL_SIZE}px ${CJK}`
+    ctx.fillText('匹配度', textCX, RATE_LABEL_Y)
 
-    // 名称
-    ctx.fillStyle = '#888'
-    ctx.font = `24px "Arial"`
-    ctx.fillText(`${primary.emoji} ${primary.name}`, 44, 168)
+    // 精准命中  fontSize=40  topMargin=44
+    const HIT_SIZE = 40
+    const HIT_Y = RATE_LABEL_Y + 44 + HIT_SIZE
+    ctx.fillStyle = '#44445a'
+    ctx.font = `bold ${HIT_SIZE}px ${CJK}`
+    ctx.fillText(`精准命中 ${exactHits} / 15 维`, textCX, HIT_Y)
 
-    // tagline
-    ctx.fillStyle = '#1a1a2e'
-    ctx.font = `bold 16px "Arial"`
-    const tag = `"${primary.tagline.slice(0, 30)}${primary.tagline.length > 30 ? '...' : ''}"`
-    ctx.fillText(tag, 44, 220)
-
-    // 匹配度 badge
-    ctx.fillStyle = primary.color + '20'
-    roundRect(ctx, 44, 246, 200, 44, 12)
-    ctx.fill()
-    ctx.fillStyle = primary.color
-    ctx.font = `bold 28px "Arial"`
-    ctx.fillText(`${matchRate}%`, 60, 278)
-    ctx.font = `14px "Arial"`
-    ctx.fillStyle = '#888'
-    ctx.fillText(`匹配度 · 精准命中 ${exactHits}/15 维`, 110, 278)
-
-    // 右下 SBTI 水印
-    ctx.fillStyle = '#ddd'
-    ctx.font = `bold 48px "Arial"`
-    ctx.fillText('SBTI', W - 140, H - 40)
+    // 底部水印（固定贴底）
+    ctx.fillStyle = primary.color + '60'
+    ctx.font = `bold 34px "Arial", ${CJK}`
+    ctx.fillText('SBTI · 人格测试', textCX, H - 90)
 
     // 下载
     const a = document.createElement('a')
@@ -535,16 +629,18 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
           )}
 
           {/* 操作按钮 */}
-          <div style={{ display:'flex', gap:10, flexWrap:'wrap', marginBottom:16 }}>
-            <button onClick={onRestart} style={{ flex:1, minWidth:120, padding:'13px 20px', background:`linear-gradient(135deg,${primary.color},#FFD23F)`, border:'none', color:'#fff', borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:`0 6px 20px ${primary.color}40`, WebkitTapHighlightColor:'transparent' }}>
-              🔄 重新测试
-            </button>
-            <button onClick={handleCopy} style={{ flex:1, minWidth:120, padding:'13px 20px', background:'#fff', border:`2px solid ${primary.color}40`, color:primary.color, borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.06)', WebkitTapHighlightColor:'transparent' }}>
-              {copied ? '✓ 已复制' : '📋 复制结果'}
-            </button>
-            <button onClick={generateShareCard} style={{ flex:1, minWidth:120, padding:'13px 20px', background:'#fff', border:`2px solid #10B98140`, color:'#10B981', borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.06)', WebkitTapHighlightColor:'transparent' }}>
+          <div style={{ display:'flex', flexDirection:'column', gap:10, marginBottom:16 }}>
+            <button onClick={generateShareCard} style={{ width:'100%', padding:'16px 20px', background:`linear-gradient(135deg,${primary.color},#FFD23F)`, border:'none', color:'#fff', borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:16, fontWeight:700, cursor:'pointer', boxShadow:`0 6px 24px ${primary.color}50`, WebkitTapHighlightColor:'transparent', letterSpacing:'0.03em' }}>
               🖼 下载卡片
             </button>
+            <div style={{ display:'flex', gap:10 }}>
+              <button onClick={onRestart} style={{ flex:1, padding:'13px 20px', background:'#fff', border:`2px solid ${primary.color}40`, color:primary.color, borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.06)', WebkitTapHighlightColor:'transparent' }}>
+                🔄 重新测试
+              </button>
+              <button onClick={handleCopy} style={{ flex:1, padding:'13px 20px', background:'#fff', border:`2px solid ${primary.color}40`, color:primary.color, borderRadius:50, fontFamily:"'Fredoka One',cursive", fontSize:14, fontWeight:700, cursor:'pointer', boxShadow:'0 4px 12px rgba(0,0,0,0.06)', WebkitTapHighlightColor:'transparent' }}>
+                {copied ? '✓ 已复制' : '📋 复制结果'}
+              </button>
+            </div>
           </div>
         </div>
 

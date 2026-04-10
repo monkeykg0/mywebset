@@ -434,7 +434,7 @@ export const personalities: PersonalityType[] = [
     tagline: '怎么样，被我拿捏了吧？',
     description: '你对自己的认知相当清晰，清楚自己的脾气、边界和底线在哪里，不太会被路人一句话打散。你做决定很快，拍板之后基本不回头磨叽，推进欲强到事情不落地心里就像卡了根刺。你在人群里不算最活跃的，但当混乱来临，大家会自动看向你——因为你用一套无法拒绝的逻辑，能把人强行拽回正轨。不是控制欲，是你见过没人掌舵的结果。',
     color: '#6366f1', rarity: 'rare', rarityRate: '1/28',
-    pattern: 'HHH-HMH-MHH-HHH-MHM',
+    pattern: 'HHH-HMH-MHH-HHH-LML',
   },
   {
     code: 'ATM-er', name: '送钱者', emoji: '🏧',
