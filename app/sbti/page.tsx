@@ -229,7 +229,16 @@ function IntroScreen({ onStart, resumeBanner, onResume, onDiscard }: {
 }) {
   const [hover, setHover] = useState(false)
   const [mounted, setMounted] = useState(false)
+  const [stats, setStats] = useState<{ total: number; top5: { code: string; pct: number }[] } | null>(null)
+
   useEffect(() => { setTimeout(() => setMounted(true), 50) }, [])
+
+  useEffect(() => {
+    fetch('/api/sbti/stats')
+      .then(r => r.json())
+      .then(data => setStats(data))
+      .catch(() => {})
+  }, [])
 
   return (
     <div style={{ minHeight:'100vh', background:'linear-gradient(135deg,#FFFBF0 0%,#FFF5E0 50%,#FFECD2 100%)', fontFamily:"'Noto Sans SC',sans-serif", display:'flex', alignItems:'center', justifyContent:'center', padding:'40px 16px', position:'relative', overflow:'hidden' }}>
@@ -295,6 +304,26 @@ function IntroScreen({ onStart, resumeBanner, onResume, onDiscard }: {
           ))}
         </div>
 
+        {/* 实时参与人数 */}
+        {stats && stats.total > 0 && (
+          <div style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            marginBottom: 20, fontSize: 13, color: '#888',
+            opacity: mounted ? 1 : 0, transition: 'opacity 0.6s ease 0.45s',
+          }}>
+            <span style={{ display:'inline-flex', gap:2 }}>
+              {[...Array(Math.min(5, stats.total))].map((_,i) => (
+                <span key={i} style={{ width:20, height:20, borderRadius:'50%', background:`hsl(${i*40+10},85%,60%)`, border:'2px solid #fff', marginLeft: i>0 ? -6 : 0, display:'inline-block' }} />
+              ))}
+            </span>
+            <span>
+              已有 <strong style={{ color:'#FF6B35', fontVariantNumeric:'tabular-nums' }}>
+                {stats.total.toLocaleString()}
+              </strong> 人完成测试
+            </span>
+          </div>
+        )}
+
         <div style={{
           opacity: mounted ? 1 : 0, transform: mounted ? 'translateY(0)' : 'translateY(12px)',
           transition: 'opacity 0.6s ease 0.5s, transform 0.6s ease 0.5s',
@@ -340,12 +369,20 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
   const [step, setStep] = useState(0)
   const [copied, setCopied] = useState(false)
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const [stats, setStats] = useState<{ total: number; top5: { code: string; pct: number }[]; dist: Record<string, number> } | null>(null)
 
   // 分步入场：0=hidden, 1=主卡片, 2=次要+按钮, 3=维度, 4=图鉴
   useEffect(() => {
     const timings = [150, 500, 900, 1300]
     const timers = timings.map((t, i) => setTimeout(() => setStep(i + 1), t))
     return () => timers.forEach(clearTimeout)
+  }, [])
+
+  useEffect(() => {
+    fetch('/api/sbti/stats')
+      .then(r => r.json())
+      .then(data => setStats(data))
+      .catch(() => {})
   }, [])
 
   // 计算精准命中维度数
@@ -750,6 +787,61 @@ function ResultScreen({ result, onRestart }: { result: CalcResult; onRestart: ()
             </div>
           </div>
         </div>
+
+        {/* 全体数据对比 */}
+        {stats && stats.total > 0 && (
+          <div style={{ ...fadeIn(step >= 3), background:'#fff', borderRadius:20, padding:'22px 20px', marginBottom:16, boxShadow:'0 4px 24px rgba(0,0,0,0.06)', border:'2px solid rgba(0,0,0,0.04)' }}>
+            <div style={{ fontFamily:"'Fredoka One',cursive", fontSize:16, color:'#1a1a2e', marginBottom:4 }}>
+              🌍 全体数据
+            </div>
+            <div style={{ fontSize:12, color:'#aaa', marginBottom:16 }}>
+              基于 <strong style={{ color:'#FF6B35', fontVariantNumeric:'tabular-nums' }}>{stats.total.toLocaleString()}</strong> 人的真实测试结果
+            </div>
+
+            {/* 你的人格占比 */}
+            {(() => {
+              const myCount = stats.dist?.[primary.code] ?? 0
+              const myPct = stats.total > 0 ? Math.round((myCount / stats.total) * 100) : 0
+              return (
+                <div style={{ background:`${primary.color}10`, borderRadius:14, padding:'14px 16px', marginBottom:14, border:`1.5px solid ${primary.color}25` }}>
+                  <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:8 }}>
+                    <span style={{ fontSize:13, fontWeight:700, color:primary.color }}>{primary.code} 在所有人中</span>
+                    <span style={{ fontFamily:"'Fredoka One',cursive", fontSize:22, color:primary.color }}>{myPct}%</span>
+                  </div>
+                  <div style={{ height:8, background:'rgba(0,0,0,0.06)', borderRadius:99, overflow:'hidden' }}>
+                    <div style={{ height:'100%', width:`${myPct}%`, background:`linear-gradient(90deg,${primary.color},${primary.color}99)`, borderRadius:99, transition:'width 1s ease' }} />
+                  </div>
+                  <div style={{ fontSize:11, color:'#aaa', marginTop:6 }}>
+                    {myPct <= 5 ? '🦄 非常稀有的人格类型！' : myPct <= 15 ? '✨ 相对少见' : myPct <= 30 ? '👥 中等常见' : '🌊 最常见类型之一'}
+                  </div>
+                </div>
+              )
+            })()}
+
+            {/* Top5 人格排行 */}
+            <div style={{ fontSize:11, fontWeight:700, color:'#999', letterSpacing:'0.1em', marginBottom:10 }}>TOP 5 最多人格</div>
+            {stats.top5.map((item, i) => (
+              <div key={item.code} style={{ display:'flex', alignItems:'center', gap:10, marginBottom:8 }}>
+                <span style={{ fontSize:11, fontWeight:700, color:item.code === primary.code ? primary.color : '#ccc', width:20, textAlign:'center' }}>
+                  {i + 1}
+                </span>
+                <span style={{ fontSize:13, fontWeight:700, color: item.code === primary.code ? primary.color : '#333', width:44 }}>
+                  {item.code}
+                </span>
+                <div style={{ flex:1, height:6, background:'rgba(0,0,0,0.06)', borderRadius:99, overflow:'hidden' }}>
+                  <div style={{
+                    height:'100%', borderRadius:99, transition:'width 1s ease',
+                    width:`${item.pct}%`,
+                    background: item.code === primary.code
+                      ? `linear-gradient(90deg,${primary.color},${primary.color}88)`
+                      : 'linear-gradient(90deg,#CBD5E1,#94A3B8)',
+                  }} />
+                </div>
+                <span style={{ fontSize:12, color:'#aaa', width:32, textAlign:'right', fontVariantNumeric:'tabular-nums' }}>{item.pct}%</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         {/* 15维度分析 */}
         <div style={{ ...fadeIn(step >= 3), background:'#fff', borderRadius:20, padding:'22px 20px', marginBottom:16, boxShadow:'0 4px 24px rgba(0,0,0,0.06)', border:'2px solid rgba(0,0,0,0.04)' }}>
