@@ -103,6 +103,17 @@ export default function SBTIPage() {
           clearProgress()
           const r = calculateResult(next, newDrunk)
           setResult(r)
+          // 上报测试结果（fire-and-forget，不阻塞 UI）
+          fetch('/api/sbti/submit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              result_code: r.primary.code,
+              match_rate: r.matchRate,
+              dim_levels: r.dimLevels,
+              dim_raw: r.dimRaw,
+            }),
+          }).catch(() => {})
           setPhase('result')
         } else {
           // 保存进度
