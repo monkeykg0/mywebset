@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 export async function POST(req: Request) {
   try {
     const supabase = createClient()
+    const body = await req.json()
     const { result_code, match_score, dim_scores, captchaToken } = body
 
     // 1. Cloudflare Turnstile 校验
