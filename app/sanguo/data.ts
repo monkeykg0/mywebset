@@ -748,6 +748,226 @@ export const questions: Question[] = [
       { text: '保持半清醒，录下老板出洋相的视频留作以后的把柄', scores: { LED: 2, LOY: -2, EMO: -2 } },
     ],
   },
+  {
+    id: 11,
+    text: '好友朋友圈九宫格全是从不同角度摆拍的自己，你的第一反应是——',
+    group: '朋友圈鉴赏',
+    options: [
+      { text: '我也把自己发进去，凑个十宫格，霸占他的版面！', scores: { SOC: 3, EMO: 1, STR: 1 } },
+      { text: '默默截图保存，日后或许用得上', scores: { LED: 1, SOC: -2, EMO: -2 } },
+      { text: '点赞+评论"好看！"（其实压根没仔细看）', scores: { LOY: -1, SOC: 1, EMO: -1 } },
+      { text: '取消关注、屏蔽、拉黑，眼不见心不烦', scores: { SOC: -3, STR: 2, EMO: -1 } },
+    ],
+  },
+  {
+    id: 12,
+    text: '半夜三点，你突然想出一个能彻底搞垮竞争对手的绝招，你会——',
+    group: '深夜恶谋',
+    options: [
+      { text: '立刻执行！冲动是魔鬼但也是动力！睡什么觉！', scores: { STR: 2, EMO: 3, LED: -1 } },
+      { text: '先睡一觉，万一明天想开了这招太缺德用不上呢', scores: { EMO: -2, LED: 1, AMB: -1 } },
+      { text: '把这招记下来，压箱底等待最佳时机再出手', scores: { LED: 3, AMB: 2, EMO: -2 } },
+      { text: '我做不出这么狠的事，关掉笔记本继续睡觉', scores: { LOY: 1, AMB: -2, STR: -1 } },
+    ],
+  },
+  {
+    id: 13,
+    text: '领导说"这事要好好处理一下"，你的破译结果是——',
+    group: '职场黑话',
+    options: [
+      { text: '"好好处理"＝立刻找人背锅，然后下手处置', scores: { LED: 2, STR: 1, LOY: -2 } },
+      { text: '随便弄弄差不多就行，反正领导也记不住', scores: { LOY: -1, AMB: -2, SOC: -1 } },
+      { text: '照字面意思理解，用最认真的态度把它做好', scores: { STR: -1, LED: -1, LOY: 2 } },
+      { text: '立刻找领导逐字确认，不搞清楚绝不动手', scores: { LOY: 1, LED: 1, SOC: -1 } },
+    ],
+  },
+  {
+    id: 14,
+    text: '公司突然宣布要裁员30%，你的第一反应是——',
+    group: '生存危机',
+    options: [
+      { text: '我肯定是那30%的主力，先跑！立刻偷偷更新简历', scores: { SOC: -1, AMB: 1, LOY: -3 } },
+      { text: '帮老板背黑锅，暗中把裁员指标转移给竞争对手', scores: { LOY: -1, LED: 2, AMB: 2 } },
+      { text: '淡定，这不是危机，是机会。低头学新技能等破局', scores: { EMO: -2, STR: -1, AMB: 2 } },
+      { text: '组织全员罢工！兄弟们同进退！', scores: { LOY: 2, SOC: 3, STR: 2 } },
+    ],
+  },
+  {
+    id: 15,
+    text: '你偶然发现了一个号称"月入百万"的搞钱秘笈，你会——',
+    group: '财富玄学',
+    options: [
+      { text: '立刻梭哈全部身家！先富起来再说！', scores: { EMO: 3, STR: 2, LED: -2 } },
+      { text: '仔细研读，找出里面的坑，改进之后再用', scores: { LED: 3, STR: -1, EMO: -2 } },
+      { text: '这是骗局！我要实名举报他！', scores: { LOY: 2, EMO: 1, AMB: -1 } },
+      { text: '转发给身边所有人，大家一起发财，我功德无量', scores: { SOC: 2, LOY: -1, AMB: 1 } },
+    ],
+  },
+  {
+    id: 16,
+    text: '相亲对象问你"你的未来规划是什么"，你怎么回答——',
+    group: '恋爱玄学',
+    options: [
+      { text: '我的规划就是让你成为我的规划（深情凝视）', scores: { EMO: 2, SOC: 2, AMB: -1 } },
+      { text: '称霸宇宙。（严肃脸，不解释）', scores: { AMB: 3, SOC: 1, LED: 2 } },
+      { text: '摆烂+存钱+偶尔做梦，这就是真实的我，不喜欢拜拜', scores: { AMB: -2, EMO: -1, SOC: -1 } },
+      { text: '视对象的条件而定，先看看你能提供哪些资源', scores: { LED: 2, LOY: -1, AMB: 1 } },
+    ],
+  },
+  {
+    id: 17,
+    text: '你帮人担保，结果对方跑路让你背了一屁股债，你会——',
+    group: '被人坑了',
+    options: [
+      { text: '挖地三尺也要找到他，让他每天都后悔来到这个世界', scores: { STR: 3, EMO: 3, LOY: -1 } },
+      { text: '沉默，流泪，然后悄悄记在一个小本子上', scores: { EMO: 1, LED: 1, SOC: -2 } },
+      { text: '无所谓，这点钱就当喂狗了，我来日方长', scores: { EMO: -2, AMB: 2, SOC: -1 } },
+      { text: '走法律途径！把证据整理得比毕业论文还详尽', scores: { LED: 2, STR: -1, EMO: -1 } },
+    ],
+  },
+  {
+    id: 18,
+    text: '你在王者荣耀打团，队友全是猪，你会——',
+    group: '组队地狱',
+    options: [
+      { text: '开麦狂骂，自己单排carry全场（虽然根本carry不了）', scores: { SOC: 2, EMO: 3, LED: -1 } },
+      { text: '精准指挥，微操换人头，想办法把猪队友也变成工具', scores: { LED: 3, STR: -1, EMO: -1 } },
+      { text: '默默承受，陪打到天亮，输了就归因于运气', scores: { LOY: 2, SOC: -2, EMO: -1 } },
+      { text: '直接挂机，我才不陪猪队友浪费青春', scores: { AMB: -1, LOY: -2, SOC: -1 } },
+    ],
+  },
+  {
+    id: 19,
+    text: '深夜三点，你突然陷入"我这辈子到底为了什么"的哲学深渊，你会——',
+    group: '深夜emo',
+    options: [
+      { text: '发长篇朋友圈emo，顺便@几个平时看不顺眼的人！', scores: { SOC: 2, EMO: 3, LOY: -1 } },
+      { text: '打开简历，默默给自己加两条技能点', scores: { AMB: 2, EMO: -2, STR: -1 } },
+      { text: '喝一杯热水，等天亮，明天继续当社畜', scores: { LOY: 1, EMO: -2, AMB: -1 } },
+      { text: '开始策划一个宏大的逆袭计划，不实现就不睡觉', scores: { AMB: 3, LED: 2, EMO: 1 } },
+    ],
+  },
+  {
+    id: 20,
+    text: '你终于拥有了让所有人臣服的绝对权力，你第一件事是——',
+    group: '君临天下',
+    options: [
+      { text: '大赦天下，广施仁政，成为万民爱戴的明君！', scores: { AMB: 2, LOY: 3, SOC: 2 } },
+      { text: '第一件事：把曾经欺负过我的人全部清算一遍', scores: { STR: 3, EMO: 2, AMB: 1 } },
+      { text: '找个代理人让他去处理，我去钓鱼享清福', scores: { AMB: -2, LED: -1, SOC: -2 } },
+      { text: '这才刚到权力顶峰，我已经在谋划下一个更大的目标了', scores: { AMB: 3, LED: 3, EMO: -1 } },
+    ],
+  },
+  {
+    id: 21,
+    text: '你发现同事在背地里说你坏话，你会——',
+    group: '情报战',
+    options: [
+      { text: '当场对质，把对方怼到怀疑人生，大家都看清楚他的嘴脸', scores: { STR: 2, EMO: 2, SOC: 2 } },
+      { text: '假装不知道，见面照样笑嘻嘻，私下已经把人加进黑名单', scores: { LED: 2, SOC: -1, LOY: -2 } },
+      { text: '立刻在大群里来一条让所有人知道他人品的内容', scores: { SOC: 3, EMO: 1, LOY: -1 } },
+      { text: '写成书面材料，实名向人事举报，法律途径解决', scores: { LOY: 1, LED: 1, EMO: -2 } },
+    ],
+  },
+  {
+    id: 22,
+    text: '明知道这一仗必输，你会怎么做？',
+    group: '战略撤退',
+    options: [
+      { text: '老子就算知道必输也要搏一把！没什么比死得热烈更值得！', scores: { STR: 3, EMO: 3, AMB: 1 } },
+      { text: '找个体面的借口先跑，留着青山在不怕没柴烧', scores: { AMB: 1, LOY: -2, SOC: -2 } },
+      { text: '主动谈判，双方各退一步，把损失降到最低', scores: { LED: 2, STR: -2, EMO: -1 } },
+      { text: '假装认输，积蓄力量，等待完美的反杀时机', scores: { LED: 3, LOY: -2, AMB: 2 } },
+    ],
+  },
+  {
+    id: 23,
+    text: '你最尴尬的黑历史被人翻出来公开了，你的操作是——',
+    group: '黑历史曝光',
+    options: [
+      { text: '直接承认！反向营业，把黑历史打造成我的独特人设！', scores: { SOC: 3, EMO: 2, STR: 1 } },
+      { text: '矢口否认，死鸭子嘴硬，谁说都不认', scores: { STR: 1, LOY: -1, LED: -1 } },
+      { text: '找出一个比我更惨的案例来转移网友的注意力', scores: { LED: 2, SOC: 1, LOY: -1 } },
+      { text: '立刻关闭一切社交账号，等风头过了再复活', scores: { SOC: -3, EMO: -2, AMB: -1 } },
+    ],
+  },
+  {
+    id: 24,
+    text: '你的"成功哲学"核心是什么？',
+    group: '人生信条',
+    options: [
+      { text: '成功靠拳头！解决不了的继续用更大的拳头解决！', scores: { STR: 3, LED: -1, EMO: 2 } },
+      { text: '把所有人当棋子，精准算计，一步一步把对手将死', scores: { LED: 3, LOY: -2, AMB: 2 } },
+      { text: '跟对人比做对事更重要，抱好大腿是第一生产力', scores: { AMB: -1, LOY: 2, SOC: -1 } },
+      { text: '我才不需要成功，我只需要让对手比我更惨', scores: { AMB: -2, STR: 1, EMO: -1 } },
+    ],
+  },
+  {
+    id: 25,
+    text: '如果可以穿越到三国乱世，你第一件事会是——',
+    group: '穿越大赏',
+    options: [
+      { text: '火速找到最强的主公，当场拜码头表忠心！', scores: { LOY: 2, AMB: -1, SOC: 1 } },
+      { text: '左右逢源，摸清各势力筹码，在最佳时机下注', scores: { LED: 3, LOY: -2, AMB: 2 } },
+      { text: '独立建业！乱世正是我辈男儿出头之日！', scores: { AMB: 3, STR: 2, LED: 1 } },
+      { text: '找诸葛亮交朋友，靠着这层关系苟到游戏结束', scores: { STR: -2, LED: 1, LOY: 1 } },
+    ],
+  },
+  {
+    id: 26,
+    text: '你身陷舆论漩涡，被网友铺天盖地地批评，你会——',
+    group: '舆论管控',
+    options: [
+      { text: '我的账号我做主！反骂到底，血战到最后一个账号！', scores: { STR: 3, SOC: 2, EMO: 3 } },
+      { text: '注销账号假死，换号复活后当无事发生', scores: { SOC: -3, LOY: -1, AMB: -1 } },
+      { text: '发一封言辞恳切但实际上没真正认错什么的道歉声明', scores: { LED: 2, SOC: -1, LOY: -1 } },
+      { text: '找更大的爆料转移视线，这场热搜必须让别人背', scores: { LED: 3, AMB: 1, LOY: -2 } },
+    ],
+  },
+  {
+    id: 27,
+    text: '上级明显有偏见故意打压你，你的应对策略是——',
+    group: '权力游戏',
+    options: [
+      { text: '直接越级向他的上司汇报，让他尝尝被挤兑的滋味', scores: { AMB: 2, LOY: -2, SOC: 2 } },
+      { text: '默默积累证据，等证据够多时一次性掀翻他', scores: { LED: 3, AMB: 2, EMO: -2 } },
+      { text: '当面硬刚！大不了鱼死网破，最坏不过是换工作！', scores: { STR: 3, EMO: 3, LOY: -1 } },
+      { text: '认了，忍了，发挥我的长寿体质，等他先退休', scores: { LOY: 2, AMB: -1, EMO: -2 } },
+    ],
+  },
+  {
+    id: 28,
+    text: '你的团队粮草快撑不住了，眼看就要崩盘，你会——',
+    group: '粮草危机',
+    options: [
+      { text: '带着骨干核心赶紧换赛道，换个方向继续干', scores: { AMB: 2, LED: 2, LOY: -1 } },
+      { text: '疯狂拉投资，哪怕对金主许下天花乱坠的承诺', scores: { AMB: 2, STR: 1, LOY: -2 } },
+      { text: '大刀阔斧裁员降本，哪怕被骂也要先活下去', scores: { LED: 3, STR: -1, LOY: -2 } },
+      { text: '号召大家共渡难关！我们同吃苦同甘苦一定能撑过去！', scores: { LOY: 3, SOC: 2, EMO: 2 } },
+    ],
+  },
+  {
+    id: 29,
+    text: '你认为了解对手最好的方法是——',
+    group: '知己知彼',
+    options: [
+      { text: '直接去问他！坦诚相待是建立信任的最快方式', scores: { STR: 2, SOC: 2, LED: -1 } },
+      { text: '安插眼线长期潜伏，不打无准备之战', scores: { LED: 3, STR: -1, EMO: -2 } },
+      { text: '研究他的朋友圈、消费习惯、社交关系，大数据不会说谎', scores: { STR: -2, LED: 2, SOC: -1 } },
+      { text: '不需要了解，我就是要打信息差，直接开冲！', scores: { STR: 3, EMO: 2, LED: -2 } },
+    ],
+  },
+  {
+    id: 30,
+    text: '有人说你"天生就是做大事的料"，你的内心os是——',
+    group: '天命之问',
+    options: [
+      { text: '那当然！这世界终于有人看清了真相，我等这句话太久了！', scores: { AMB: 3, SOC: 3, EMO: 2 } },
+      { text: '哈哈，谢谢，不过我做的蠢事列一百件都够了', scores: { SOC: -1, EMO: -1, STR: -1 } },
+      { text: '那就给我找一件值得我去做的大事吧', scores: { AMB: 2, LED: 2, STR: 1 } },
+      { text: '算了，我只想安安静静过日子，大事太累了', scores: { AMB: -3, LOY: 1, SOC: -2 } },
+    ],
+  },
 ]
 
 // ─── 计算结果 ─────────────────────────────────────────────
@@ -777,44 +997,62 @@ export function calculateResult(scores: Partial<Record<DimKey, number>>): CalcRe
     AMB: scores.AMB ?? 0,
   }
 
+  const dims: DimKey[] = ['STR', 'LED', 'EMO', 'LOY', 'SOC', 'AMB']
+
   // 根据得分确定每个维度的极性
   function getPole(key: DimKey): DimPole {
     const [pos, neg] = DIM_POLES[key]
     return dimScores[key] >= 0 ? pos : neg
   }
 
-  const myPoles: DimPole[] = [
-    getPole('STR'), getPole('LED'), getPole('EMO'),
-    getPole('LOY'), getPole('SOC'), getPole('AMB'),
-  ]
+  const myPoles: DimPole[] = dims.map(getPole)
 
-  // 匹配度计算
-  let bestChar = characters[0]
-  let bestScore = -1
-
-  for (const char of characters) {
-    let match = 0
-    for (let i = 0; i < 6; i++) {
-      if (char.poles[i] === myPoles[i]) match++
-    }
-    // 加权：极性得分越接近越好
-    const dims: DimKey[] = ['STR','LED','EMO','LOY','SOC','AMB']
-    let weightedScore = match * 10
+  // 计算每个角色的匹配分
+  // 极性匹配：每个维度0-10分（完全匹配10分，部分权重按绝对值）
+  // 加权连续分：同方向时，绝对值越大越匹配（上限5分/维）
+  // 理论最大分：6*10 + 6*5 = 90
+  function calcScore(char: SanguoChar): number {
+    let total = 0
     for (let i = 0; i < 6; i++) {
       const key = dims[i]
       const [pos] = DIM_POLES[key]
-      const charWantPositive = char.poles[i] === pos
+      const charWantsPositive = char.poles[i] === pos
       const myScore = dimScores[key]
-      if (charWantPositive && myScore > 0) weightedScore += Math.min(myScore, 5)
-      if (!charWantPositive && myScore < 0) weightedScore += Math.min(-myScore, 5)
+      const poleMatch = char.poles[i] === myPoles[i]
+
+      // 极性是否一致
+      if (poleMatch) {
+        total += 10
+      }
+      // 同方向强度加分（无论极性是否完全一致，只要同号就给强度分）
+      if (charWantsPositive && myScore > 0) total += Math.min(myScore, 5)
+      if (!charWantsPositive && myScore < 0) total += Math.min(-myScore, 5)
     }
-    // 加入微小的随机因素，解决多个武将雷达图完全冲突相同的Tie-Breaker问题
-    weightedScore += Math.random() * 0.5
-    if (weightedScore > bestScore) {
-      bestScore = weightedScore
+    return total
+  }
+
+  let bestChar = characters[0]
+  let bestScore = -1
+  let secondScore = -1
+
+  for (const char of characters) {
+    const s = calcScore(char)
+    if (s > bestScore) {
+      secondScore = bestScore
+      bestScore = s
       bestChar = char
+    } else if (s > secondScore) {
+      secondScore = s
     }
   }
+
+  // 匹配置信度：最高分与次高分差距越大，匹配度越高；差距小则适当降低
+  const gap = bestScore - secondScore
+  // 基础分映射到 55-99 区间，gap 提供额外加成
+  const BASE_MAX = 90 // 理论最大分
+  const base = Math.round((bestScore / BASE_MAX) * 85)
+  const bonus = Math.min(14, Math.round(gap * 1.2))
+  const matchScore = Math.min(99, Math.max(55, base + bonus))
 
   const factionCount: Record<string, number> = {}
   for (const c of characters) {
@@ -823,8 +1061,7 @@ export function calculateResult(scores: Partial<Record<DimKey, number>>): CalcRe
 
   return {
     character: bestChar,
-    // 因为砍掉了题目，调整了权重分，所以稍微修正匹配度，避免过小
-    matchScore: Math.min(99, Math.round((bestScore / 60) * 100)),
+    matchScore,
     factionCount,
     dimScores,
   }
