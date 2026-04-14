@@ -29,5 +29,7 @@ export async function GET() {
     .slice(0, 5)
     .map(([code, count]) => ({ code, count, pct: Math.round((count / total) * 100) }))
 
-  return NextResponse.json({ total, dist, top5 })
+  return NextResponse.json({ total, dist, top5 }, {
+    headers: { 'Cache-Control': 'no-store' },
+  })
 }
