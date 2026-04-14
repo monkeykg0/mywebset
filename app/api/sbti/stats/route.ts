@@ -1,7 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 
-export const revalidate = 60 // 缓存 60 秒，避免每次请求都查库
+export const dynamic = 'force-dynamic' // 完全禁用缓存，每次都查库
 
 export async function GET() {
   const supabase = createClient()
