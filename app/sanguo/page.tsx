@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef, useCallback, useEffect } from 'react'
+import Script from 'next/script'
 import { characters, questions, calculateResult } from './data'
 import type { SanguoChar, DimKey } from './data'
 
@@ -336,6 +337,8 @@ export default function SanguoPage() {
   const [charObj, setCharObj] = useState<SanguoChar | null>(null)
   const [animKey, setAnimKey] = useState(0)
   const [revealDims, setRevealDims] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  const [isVerified, setIsVerified] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
   // 1. 设置页面标题
@@ -374,13 +377,14 @@ export default function SanguoPage() {
           result_code: res.character.code,
           match_score: res.matchScore,
           dim_scores: res.dimScores,
+          captchaToken: captchaToken, 
         }),
       }).catch(() => {})
 
       setScreen('result')
       setTimeout(() => setRevealDims(true), 800)
     }
-  }, [selected, answers, current, total])
+  }, [selected, answers, current, total, captchaToken])
 
   // 重置
   const handleRestart = useCallback(() => {
@@ -405,30 +409,85 @@ export default function SanguoPage() {
       <style dangerouslySetInnerHTML={{ __html: STYLE }} />
       <div className="sg-root" ref={containerRef}>
         <div className="sg-scanlines" />
+        <Script 
+          src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" 
+          strategy="afterInteractive" 
+        />
         <div className="sg-content">
-          {screen === 'intro' && <IntroScreen onStart={handleStart} />}
-          {screen === 'test' && (
-            <TestScreen
-              key={animKey}
-              question={questions[current]}
-              current={current}
-              total={total}
-              selected={selected}
-              onSelect={handleSelect}
-              onNext={handleNext}
+          {!isVerified ? (
+            <VerificationGuard 
+              onVerify={(token) => {
+                setCaptchaToken(token)
+                setTimeout(() => setIsVerified(true), 1000)
+              }} 
             />
-          )}
-          {screen === 'result' && result && charObj && (
-            <ResultScreen
-              result={result}
-              char={charObj}
-              revealDims={revealDims}
-              onRestart={handleRestart}
-            />
+          ) : (
+            <div className="sg-animate-in">
+              {screen === 'intro' && <IntroScreen onStart={handleStart} />}
+              {screen === 'test' && (
+                <TestScreen
+                  key={animKey}
+                  question={questions[current]}
+                  current={current}
+                  total={total}
+                  selected={selected}
+                  onSelect={handleSelect}
+                  onNext={handleNext}
+                />
+              )}
+              {screen === 'result' && result && charObj && (
+                <ResultScreen
+                  result={result}
+                  char={charObj}
+                  revealDims={revealDims}
+                  onRestart={handleRestart}
+                />
+              )}
+            </div>
           )}
         </div>
       </div>
     </>
+  )
+}
+
+// ─── 验证卫兵 ──────────────────────────────────────────
+function VerificationGuard({ onVerify }: { onVerify: (t: string) => void }) {
+  const widgetRef = useRef<HTMLDivElement>(null)
+  const rendered = useRef(false)
+
+  useEffect(() => {
+    const renderWidget = () => {
+      if (typeof window !== 'undefined' && (window as any).turnstile && widgetRef.current && !rendered.current) {
+        widgetRef.current.innerHTML = '' 
+        ;(window as any).turnstile.render(widgetRef.current, {
+          sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
+          theme: 'dark',
+          callback: (token: string) => onVerify(token),
+        })
+        rendered.current = true
+      } else if (!rendered.current) {
+        setTimeout(renderWidget, 500)
+      }
+    }
+    renderWidget()
+  }, [onVerify])
+
+  return (
+    <div style={{ height: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center' }}>
+      <div style={{ marginBottom: 32, animation: 'sg-flicker 3s infinite' }}>
+        <h2 style={{ fontFamily: "'Ma Shan Zheng', serif", fontSize: 32, color: '#fff', marginBottom: 12, letterSpacing: 4 }}>
+          身份鉴别
+        </h2>
+        <p style={{ color: '#4a6080', fontSize: 13, letterSpacing: 1, opacity: 0.8 }}>
+          正在通过赛博网关，请证明你不是 AI 仿生人
+        </p>
+      </div>
+      <div ref={widgetRef} style={{ minHeight: 65 }} />
+      <div style={{ marginTop: 60, borderTop: '1px solid #1a2a4a', paddingTop: 20, width: 200, opacity: 0.3 }}>
+        <div style={{ fontSize: 9, color: '#4a6080', letterSpacing: 2 }}>SECURITY LEVEL: NANOBANANA</div>
+      </div>
+    </div>
   )
 }
 
