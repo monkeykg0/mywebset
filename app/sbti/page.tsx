@@ -234,7 +234,7 @@ function IntroScreen({ onStart, resumeBanner, onResume, onDiscard }: {
   useEffect(() => { setTimeout(() => setMounted(true), 50) }, [])
 
   useEffect(() => {
-    fetch('/api/sbti/stats')
+    fetch('/api/sbti/stats?t=' + Date.now(), { cache: 'no-store' })
       .then(r => r.json())
       .then(data => setStats(data))
       .catch(() => {})
