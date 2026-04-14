@@ -730,7 +730,13 @@ function TestScreen({
           <button
             key={i}
             className={`sg-option ${selected === i ? 'selected' : ''}`}
-            onClick={() => onSelect(i)}
+            onClick={() => {
+              onSelect(i)
+              // 自动跳转，加300ms延迟以便看到选中反馈
+              setTimeout(() => {
+                document.getElementById('hidden-next-btn')?.click()
+              }, 300)
+            }}
           >
             <span style={{
               display: 'inline-flex',
@@ -753,17 +759,15 @@ function TestScreen({
         ))}
       </div>
 
-      {/* 下一步 */}
-      <div style={{ textAlign: 'right' }}>
-        <button
-          className="sg-btn primary"
-          onClick={onNext}
-          disabled={selected === null}
-        >
-          {current + 1 < total ? '下一题' : '查看结果'}
-          <span>→</span>
-        </button>
-      </div>
+      {/* 隐藏的下一步按钮（供自动执行触发） */}
+      <button
+        id="hidden-next-btn"
+        style={{ display: 'none' }}
+        onClick={onNext}
+        disabled={selected === null}
+      >
+        Next
+      </button>
     </div>
   )
 }
