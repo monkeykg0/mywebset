@@ -29,7 +29,7 @@ export function SanguoPixelChar({ code, color, size = 5 }: SanguoCharProps) {
       overflow: 'hidden'
     }}>
       <img 
-        src={error ? `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(code)}&backgroundColor=transparent` : `/sanguo/${filename}.png`}
+        src={error ? `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(code)}&backgroundColor=transparent` : `https://www.monkeykg.top/sanguo/${filename}.png`}
         alt={code}
         onError={() => setError(true)}
         style={{ 
