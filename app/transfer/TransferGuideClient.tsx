@@ -77,7 +77,7 @@ export default function TransferGuideClient() {
                       ，登录后进入控制台。
                     </p>
                     <div className="mt-4 overflow-hidden rounded-xl border border-gray-200 bg-white">
-                      <Image src={img0} alt="登录 EasyRouter 控制台" placeholder="blur" />
+                      <Image src={img0} alt="登录  控制台" placeholder="blur" />
                     </div>
                   </div>
 
@@ -124,7 +124,7 @@ export default function TransferGuideClient() {
               <div className="space-y-6">
                 <h3 className="text-xl font-semibold">Step 2 — 调用第一个 API</h3>
                 <p className="text-gray-600 text-sm sm:text-[15px] leading-relaxed">
-                 new-api 与 OpenAI API 完全兼容，任何支持 OpenAI 的 SDK 或工具，只需把 <span className="font-mono">base_url</span> 和 <span className="font-mono">api_key</span> 换成 EasyRouter 的即可。
+                 new-api 与 OpenAI API 完全兼容，任何支持 OpenAI 的 SDK 或工具，只需把 <span className="font-mono">base_url</span> 和 <span className="font-mono">api_key</span> 换成 我们提供 的即可。
                 </p>
 
                 <div className="space-y-6">
@@ -224,7 +224,7 @@ print(response.choices[0].message.content)`}</CodeBlock>
                   <div>
                     <h4 className="text-base font-semibold">cc-switch（推荐新手）：一键配置秘钥</h4>
                     <p className="mt-2 text-gray-600 text-sm sm:text-[15px] leading-relaxed">
-                      使用 <span className="font-mono">cc-switch</span> 直接把 EasyRouter 的 API Key/地址导入到 Codex，
+                      使用 <span className="font-mono">cc-switch</span> 直接把  平台提供的 API Key/地址导入到 Codex，
                       避免手动配置环境变量或逐项填写。
                     </p>
 
@@ -293,35 +293,7 @@ export OPENAI_API_KEY="sk-你的APIKey"`}</CodeBlock>
                   </div>
 
                   <div>
-                    <h4 className="text-base font-semibold">🦅 OpenClaw（自托管 AI 助手，进阶）</h4>
-                    <p className="mt-2 text-gray-600 text-sm sm:text-[15px] leading-relaxed">
-                      OpenClaw 是一个自托管 AI 助手平台，支持 Telegram、Discord、Feishu 等多渠道接入。在 <span className="font-mono">~/.openclaw/openclaw.json</span> 中添加以下配置：
-                    </p>
-                    <div className="mt-4">
-                      <CodeBlock language="json">{`{
-  "models": {
-    "mode": "merge",
-    "providers": {
-      "easyrouter": {
-        "baseUrl": https://monkeykg.zeabur.app/v1",
-        "apiKey": "sk-你的APIKey",
-        "api": "openai-completions",
-        "models": [
-          { "id": "gpt-4o", "name": "GPT-4o" },
-          { "id": "claude-3-5-sonnet", "name": "Claude 3.5 Sonnet" }
-        ]
-      }
-    }
-  },
-  "agents": {
-    "defaults": {
-      "model": {
-        "primary": "easyrouter/gpt-4o"
-      }
-    }
-  }
-}`}</CodeBlock>
-                    </div>
+                    
                   </div>
 
                   <div>
@@ -337,7 +309,7 @@ export OPENAI_API_KEY="sk-你的APIKey"`}</CodeBlock>
 
                     <div className="mt-4">
                       <Callout type="info" title="一键填入">
-                        EasyRouter 控制台令牌管理页支持「一键填入 Cherry Studio」快捷操作，在令牌列表点击后 Cherry Studio 会自动填充配置，无需手动输入。
+                        控制台令牌管理页支持「一键填入 Cherry Studio」快捷操作，在令牌列表点击后 Cherry Studio 会自动填充配置，无需手动输入。
                       </Callout>
                     </div>
                   </div>
@@ -367,7 +339,7 @@ export OPENAI_API_KEY="sk-你的APIKey"`}</CodeBlock>
           <section>
             <h2 className="text-2xl font-bold">二、API 能力一览</h2>
             <p className="mt-2 text-gray-600 text-sm sm:text-[15px] leading-relaxed">
-              EasyRouter 提供以下 AI 模型 API，均兼容 OpenAI 格式：
+              提供以下 AI 模型 API，均兼容 OpenAI 格式：
             </p>
 
             <div className="mt-4 rounded-xl border border-gray-200 bg-white overflow-hidden">
