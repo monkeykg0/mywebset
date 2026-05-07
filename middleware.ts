@@ -2,6 +2,15 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // 需要登录才能访问的路由，在这里添加
+  const protectedRoutes = ['/dashboard', '/profile', '/upload']
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    request.nextUrl.pathname.startsWith(route)
+  )
+
+  // 非保护路由不需要鉴权，也避免在中间件里触发 Supabase 请求导致 504
+  if (!isProtectedRoute) return NextResponse.next({ request })
+
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
@@ -25,14 +34,23 @@ export async function middleware(request: NextRequest) {
     }
   )
 
-  // 刷新过期的 session，必须调用
-  const { data: { user } } = await supabase.auth.getUser()
+  // 刷新过期的 session，必须调用；同时给一个超时兜底，避免中间件卡死
+  let user: unknown = null
+  try {
+    const timeoutMs = 2500
+    const timeout = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('supabase auth.getUser timeout')), timeoutMs)
+    })
 
-  // 需要登录才能访问的路由，在这里添加
-  const protectedRoutes = ['/dashboard', '/profile', '/upload']
-  const isProtectedRoute = protectedRoutes.some(route =>
-    request.nextUrl.pathname.startsWith(route)
-  )
+    const result = await Promise.race([
+      supabase.auth.getUser(),
+      timeout,
+    ])
+
+    user = (result as any)?.data?.user ?? null
+  } catch {
+    user = null
+  }
 
   if (isProtectedRoute && !user) {
     const redirectUrl = request.nextUrl.clone()
