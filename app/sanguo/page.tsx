@@ -4,8 +4,8 @@ import React, { useState, useRef, useCallback, useEffect } from 'react'
 import Script from 'next/script'
 import { characters, questions, calculateResult } from './data'
 import type { SanguoChar, DimKey } from './data'
+import { SanguoPixelChar } from './pixel-characters'
 
-// 把答案序列（每题选项索引）转换成维度得分 map
 function scoreMap(answers: number[]): Partial<Record<DimKey, number>> {
   const acc: Partial<Record<DimKey, number>> = {}
   answers.forEach((optIdx, qIdx) => {
@@ -19,7 +19,6 @@ function scoreMap(answers: number[]): Partial<Record<DimKey, number>> {
   })
   return acc
 }
-import { SanguoPixelChar } from './pixel-characters'
 
 // ─── 派系颜色映射 ────────────────────────────────────────
 const FACTION_COLORS: Record<string, { label: string; neon: string; glow: string }> = {
@@ -457,16 +456,20 @@ function VerificationGuard({ onVerify }: { onVerify: (t: string) => void }) {
   const rendered = useRef(false)
 
   useEffect(() => {
+    let attempts = 0
+    const MAX_ATTEMPTS = 20
+
     const renderWidget = () => {
-      if (typeof window !== 'undefined' && (window as any).turnstile && widgetRef.current && !rendered.current) {
-        widgetRef.current.innerHTML = '' 
+      if (rendered.current) return
+      if (typeof window !== 'undefined' && (window as any).turnstile && widgetRef.current) {
+        widgetRef.current.innerHTML = ''
         ;(window as any).turnstile.render(widgetRef.current, {
           sitekey: process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY,
           theme: 'dark',
           callback: (token: string) => onVerify(token),
         })
         rendered.current = true
-      } else if (!rendered.current) {
+      } else if (++attempts < MAX_ATTEMPTS) {
         setTimeout(renderWidget, 500)
       }
     }
@@ -600,7 +603,7 @@ function IntroScreen({ onStart }: { onStart: () => void }) {
       }}>
         {[
           { label: '测试题目', value: '25' },
-          { label: '人物总数', value: '90+' },
+          { label: '人物总数', value: '100+' },
           { label: '维度分析', value: '6' },
         ].map(item => (
           <div key={item.label} style={{ textAlign: 'center' }}>
@@ -732,10 +735,7 @@ function TestScreen({
             className={`sg-option ${selected === i ? 'selected' : ''}`}
             onClick={() => {
               onSelect(i)
-              // 自动跳转，加300ms延迟以便看到选中反馈
-              setTimeout(() => {
-                document.getElementById('hidden-next-btn')?.click()
-              }, 300)
+              setTimeout(onNext, 300)
             }}
           >
             <span style={{
@@ -759,15 +759,6 @@ function TestScreen({
         ))}
       </div>
 
-      {/* 隐藏的下一步按钮（供自动执行触发） */}
-      <button
-        id="hidden-next-btn"
-        style={{ display: 'none' }}
-        onClick={onNext}
-        disabled={selected === null}
-      >
-        Next
-      </button>
     </div>
   )
 }
@@ -1015,7 +1006,7 @@ function ResultScreen({
         return (
           <div className="neon-box" style={{ padding: '24px 28px', marginBottom: 32 }}>
             <div style={{ fontSize: 11, letterSpacing: 4, color: '#4a6080', marginBottom: 16 }}>
-              SIMILAR PROFILES · 相近人格
+              SAME FACTION · 同势力人物
             </div>
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
               {similar.map(ch2 => (

@@ -257,7 +257,7 @@ export const characters: SanguoChar[] = [
     color: '#B0C4DE', rarity: 'epic', poles: ['S','L','C','Y','R','M'],
   },
   {
-    code: 'YUAN', name: '于禁', title: '晚节不保老黄牛', faction: 'wei',
+    code: 'YUJIN', name: '于禁', title: '晚节不保老黄牛', faction: 'wei',
     tagline: '干了一辈子苦劳，就输在最后一次投降！',
     description: '前半生兢兢业业，履历完美无瑕。结果却在快要退休的最后关头，因为一次“认怂”而晚节不保。这告诉我们一个道理：平时装得太伟光正，一旦跌落神坛，吃瓜群众的口水就能把你淹死。',
     color: '#708090', rarity: 'rare', poles: ['S','L','C','P','R','M'],
@@ -575,7 +575,7 @@ export const characters: SanguoChar[] = [
     color: '#FFD700', rarity: 'legendary', poles: ['I','D','H','P','E','K'],
   },
   {
-    code: 'GONGZUNZAN', name: '公孙瓒', title: '白马飙车族', faction: 'qun',
+    code: 'GONGSUNZAN', name: '公孙瓒', title: '白马飙车族', faction: 'qun',
     tagline: '只要我的马跑得够快，厄运就永远追不上我！',
     description: '酷爱速度与激情的偏执狂。你把所有的资源都砸在了一支华丽的白马飙车队上，享受风驰电掣的感觉。其实你内心极度缺乏安全感，只能靠不停地奔跑和修建坚固的堡垒来掩饰自己的恐惧。',
     color: '#FFFFFF', rarity: 'rare', poles: ['S','D','C','P','R','K'],
@@ -1046,13 +1046,12 @@ export function calculateResult(scores: Partial<Record<DimKey, number>>): CalcRe
     }
   }
 
-  // 匹配置信度：最高分与次高分差距越大，匹配度越高；差距小则适当降低
   const gap = bestScore - secondScore
-  // 基础分映射到 55-99 区间，gap 提供额外加成
-  const BASE_MAX = 90 // 理论最大分
+  const BASE_MAX = 90 // 6维 × (极性10分 + 强度5分)
   const base = Math.round((bestScore / BASE_MAX) * 85)
   const bonus = Math.min(14, Math.round(gap * 1.2))
-  const matchScore = Math.min(99, Math.max(55, base + bonus))
+  // 下限 40 而非 0，避免任何结果都显示"极低匹配"带来的负面体验
+  const matchScore = Math.min(99, Math.max(40, base + bonus))
 
   const factionCount: Record<string, number> = {}
   for (const c of characters) {
