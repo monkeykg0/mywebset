@@ -320,8 +320,32 @@ export default function GiffgaffGuidePage() {
             </p>
           </motion.div>
 
+          {/* 适用场景 —— 醒目卡片 */}
           <motion.div
-            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.15 }}
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.12 }}
+            className="mt-8 max-w-2xl rounded-2xl p-5 sm:p-6"
+            style={{ background: 'rgba(0,214,143,.08)', border: '1px solid rgba(0,214,143,.28)', backdropFilter: 'blur(4px)' }}
+          >
+            <div className="gg-display flex items-center gap-2 text-[13px] font-bold tracking-wide" style={{ color: 'var(--gg-green)' }}>
+              <span aria-hidden>✦</span> 这张卡主要用来做什么？
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-3">
+              {[
+                { icon: '✈️', t: '旅游出行', d: '英国 / 欧洲漫游通话与上网' },
+                { icon: '🌐', t: '海外账号注册', d: 'Codex、Claude Code、Gmail 等' },
+                { icon: '📩', t: '保号 · 接码', d: '长期持有，收发短信验证码' },
+              ].map((x) => (
+                <div key={x.t} className="rounded-xl px-3.5 py-3" style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.08)' }}>
+                  <div className="text-xl">{x.icon}</div>
+                  <div className="gg-display mt-1.5 text-[14.5px] font-bold text-white">{x.t}</div>
+                  <div className="mt-0.5 text-[12.5px] leading-snug" style={{ color: 'rgba(255,255,255,.6)' }}>{x.d}</div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.2 }}
             className="mt-9 flex flex-wrap gap-3"
           >
             <button onClick={() => goto(sections[0].id)} className="gg-display rounded-full px-6 py-3 text-sm font-bold text-[#06120d] transition-transform hover:scale-[1.03]" style={{ background: 'var(--gg-green)' }}>
