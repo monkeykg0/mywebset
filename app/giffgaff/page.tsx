@@ -318,6 +318,12 @@ export default function GiffgaffGuidePage() {
             <p className="mt-5 max-w-xl text-[15.5px] sm:text-[17px] leading-relaxed" style={{ color: 'rgba(255,255,255,.7)' }}>
               {META.subtitle}
             </p>
+            <p className="mt-4 max-w-2xl text-[15px] sm:text-[16.5px] leading-relaxed font-medium" style={{ color: 'rgba(255,255,255,.92)' }}>
+              英国卡<span style={{ color: 'var(--gg-green)' }}>保号神卡</span>：充值
+              <span style={{ color: 'var(--gg-green)' }}> 10 英镑</span> 算下来能用
+              <span style={{ color: 'var(--gg-green)' }}> 15 年以上</span>，平均每年仅约
+              <span style={{ color: 'var(--gg-green)' }}> 6 块钱</span>。
+            </p>
           </motion.div>
 
           {/* 适用场景 —— 醒目卡片 */}
@@ -333,13 +339,25 @@ export default function GiffgaffGuidePage() {
               {[
                 { icon: '✈️', t: '旅游出行', d: '英国 / 欧洲漫游通话与上网' },
                 { icon: '🌐', t: '海外账号注册', d: 'Codex、Claude Code、Gmail 等' },
-                { icon: '📩', t: '保号 · 接码', d: '长期持有，收发短信验证码' },
+                { icon: '📩', t: '保号 · 二次接码', d: 'Codex 等平台二次接码、收验证码' },
               ].map((x) => (
                 <div key={x.t} className="rounded-xl px-3.5 py-3" style={{ background: 'rgba(255,255,255,.05)', border: '1px solid rgba(255,255,255,.08)' }}>
                   <div className="text-xl">{x.icon}</div>
                   <div className="gg-display mt-1.5 text-[14.5px] font-bold text-white">{x.t}</div>
                   <div className="mt-0.5 text-[12.5px] leading-snug" style={{ color: 'rgba(255,255,255,.6)' }}>{x.d}</div>
                 </div>
+              ))}
+            </div>
+            {/* 核心优势 */}
+            <div className="mt-4 flex flex-wrap gap-2 border-t pt-4" style={{ borderColor: 'rgba(0,214,143,.18)' }}>
+              {[
+                '无需 KYC 实名认证',
+                '全程手机 App 操作',
+                '大陆用户门槛极低',
+              ].map((t) => (
+                <span key={t} className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-medium" style={{ background: 'rgba(0,214,143,.12)', color: '#9affd2', border: '1px solid rgba(0,214,143,.25)' }}>
+                  <span aria-hidden style={{ color: 'var(--gg-green)' }}>✓</span> {t}
+                </span>
               ))}
             </div>
           </motion.div>
@@ -359,9 +377,9 @@ export default function GiffgaffGuidePage() {
           {/* 数据小标 */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-12 flex flex-wrap gap-x-9 gap-y-4">
             {[
-              { k: '16', v: '完整章节' },
-              { k: '180', v: '天保号周期' },
-              { k: '+44', v: '英国号码区号' },
+              { k: '15', v: '年超长可用' },
+              { k: '¥6', v: '约每年成本' },
+              { k: '0', v: 'KYC 实名门槛' },
             ].map((x) => (
               <div key={x.v}>
                 <div className="gg-display text-2xl sm:text-3xl font-extrabold text-white">{x.k}</div>
