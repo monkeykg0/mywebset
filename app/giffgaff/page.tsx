@@ -319,10 +319,9 @@ export default function GiffgaffGuidePage() {
               {META.subtitle}
             </p>
             <p className="mt-4 max-w-2xl text-[15px] sm:text-[16.5px] leading-relaxed font-medium" style={{ color: 'rgba(255,255,255,.92)' }}>
-              英国卡<span style={{ color: 'var(--gg-green)' }}>保号神卡</span>：充值
-              <span style={{ color: 'var(--gg-green)' }}> 10 英镑</span> 算下来能用
-              <span style={{ color: 'var(--gg-green)' }}> 15 年以上</span>，平均每年仅约
-              <span style={{ color: 'var(--gg-green)' }}> 6 块钱</span>。
+              英国卡<span style={{ color: 'var(--gg-green)' }}>保号神卡</span>：仅靠
+              <span style={{ color: 'var(--gg-green)' }}> 10 英镑</span> 余额，按保号消耗就能撑
+              <span style={{ color: 'var(--gg-green)' }}> 15 年以上</span>（平均每年仅约 6 块钱）；用完再充即可继续，可<span style={{ color: 'var(--gg-green)' }}>长期持有</span>。
             </p>
           </motion.div>
 
@@ -377,12 +376,15 @@ export default function GiffgaffGuidePage() {
           {/* 数据小标 */}
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-12 flex flex-wrap gap-x-9 gap-y-4">
             {[
-              { k: '15', v: '年超长可用' },
-              { k: '¥6', v: '约每年成本' },
-              { k: '0', v: 'KYC 实名门槛' },
+              { k: '£10', u: '', v: '即可用 15 年+' },
+              { k: '¥6', u: '/年', v: '平均成本' },
+              { k: '0', u: '', v: 'KYC 实名门槛' },
             ].map((x) => (
               <div key={x.v}>
-                <div className="gg-display text-2xl sm:text-3xl font-extrabold text-white">{x.k}</div>
+                <div className="gg-display flex items-baseline gap-1 text-white">
+                  <span className="text-2xl sm:text-3xl font-extrabold">{x.k}</span>
+                  {x.u && <span className="text-base sm:text-lg font-bold" style={{ color: 'rgba(255,255,255,.8)' }}>{x.u}</span>}
+                </div>
                 <div className="text-xs mt-0.5" style={{ color: 'rgba(255,255,255,.55)' }}>{x.v}</div>
               </div>
             ))}
